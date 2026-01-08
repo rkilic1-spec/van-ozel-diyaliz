@@ -1,7 +1,7 @@
 const http = require("http");
 const PORT = process.env.PORT || 10000;
 
-// Geçici kullanıcılar (ileride DB olur)
+// Kullanıcılar
 const users = [
   { username: "admin", password: "1234", role: "admin" },
   { username: "hemsire1", password: "1234", role: "hemsire" }
@@ -10,11 +10,11 @@ const users = [
 const server = http.createServer((req, res) => {
   res.setHeader("Content-Type", "text/html; charset=utf-8");
 
-  // GİRİŞ SAYFASI
+  // GİRİŞ SAYFASI (GET)
   if (req.method === "GET" && req.url === "/") {
     return res.end(`
       <h2>Van Özel Diyaliz Merkezi - Giriş</h2>
-      <form method="POST" action="/login">
+      <form method="POST">
         <input name="username" placeholder="Kullanıcı adı" required /><br><br>
         <input name="password" type="password" placeholder="Şifre" required /><br><br>
         <button>Giriş Yap</button>
@@ -22,8 +22,8 @@ const server = http.createServer((req, res) => {
     `);
   }
 
-  // LOGIN
-  if (req.method === "POST" && req.url === "/login") {
+  // GİRİŞ KONTROLÜ (POST)
+  if (req.method === "POST" && req.url === "/") {
     let body = "";
     req.on("data", chunk => body += chunk);
     req.on("end", () => {
@@ -55,11 +55,7 @@ const server = http.createServer((req, res) => {
   if (req.url === "/admin") {
     return res.end(`
       <h1>ADMIN PANELİ</h1>
-      <ul>
-        <li>Hemşire yönetimi</li>
-        <li>Hasta listesi</li>
-        <li>Raporlar</li>
-      </ul>
+      <p>Hoş geldin Admin</p>
       <a href="/">Çıkış</a>
     `);
   }
@@ -68,7 +64,7 @@ const server = http.createServer((req, res) => {
   if (req.url === "/hemsire") {
     return res.end(`
       <h1>HEMŞİRE PANELİ</h1>
-      <p>Bugünkü hastalar burada görünecek</p>
+      <p>Hoş geldin Hemşire</p>
       <a href="/">Çıkış</a>
     `);
   }
