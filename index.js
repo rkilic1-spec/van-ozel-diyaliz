@@ -1,4 +1,7 @@
 console.log("🚀 INDEX.JS ÇALIŞTI");
+app.post("/admin/hemsire-ekle", (req, res) => {
+  res.send("OK - ROUTE ÇALIŞIYOR");
+});
 
 const express = require("express");
 const session = require("express-session");
