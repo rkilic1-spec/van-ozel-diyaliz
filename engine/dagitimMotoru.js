@@ -26,6 +26,10 @@ function haftalikDagitimYap(hafta) {
     console.log("Hafta kilitli, sadece boş yerlere bakılabilir.");
     return;
   }
+function calistir() {
+  console.log("🔵 DAĞITIM MOTORU ÇALIŞTI", new Date());
+  // dağıtım kodları
+}
 
   // Adil hasta sayısı hesabı
   const toplamHasta = hastalar.length;
