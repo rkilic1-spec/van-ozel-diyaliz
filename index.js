@@ -29,6 +29,9 @@ function requireHemsire(req, res, next) {
   }
   next();
 }
+app.get("/admin/hastalar", requireAdmin, (req, res) => {
+  res.json(hastalar);
+});
 
 // ===== LOGIN SAYFALARI =====
 app.get("/", (req, res) => {
