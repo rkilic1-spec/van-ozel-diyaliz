@@ -1,8 +1,10 @@
+const path = require("path");
+
 const express = require("express");
 const session = require("express-session");
+const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 10000;
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -59,7 +61,7 @@ app.get("/dashboard", (req, res) => {
   }
 
   res.send(`
-    <h1>Hoş geldiniz ${req.session.user}</h1>
+    <h1>Hoş geldiniz ${req.session.user.username}</h1>
     <p>Sistem aktif.</p>
     <a href="/logout">Çıkış Yap</a>
   `);
