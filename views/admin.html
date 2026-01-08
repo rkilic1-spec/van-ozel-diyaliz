@@ -85,3 +85,17 @@ fetch("/admin/hastalar")
     });
   });
 </script>
+<h2>Hemşire Ekle</h2>
+
+<form method="POST" action="/admin/hemsire-ekle">
+  <input name="adSoyad" placeholder="Ad Soyad" required />
+  <input name="tc" placeholder="TC Kimlik No" required maxlength="11" />
+  <button type="submit">Hemşire Ekle</button>
+</form>
+
+<hr>
+
+<h2>Hemşire Listesi</h2>
+<ul>
+  {{HEMSIRE_LISTESI}}
+</ul>
