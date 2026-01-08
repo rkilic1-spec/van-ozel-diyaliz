@@ -1,101 +1,83 @@
-<h2>Hasta Ekle</h2>
-
-<form method="POST" action="/admin/hasta-ekle">
-  <input name="ad" placeholder="Hasta Adı" required><br><br>
-
-  <label>Cihaz:</label>
-  <select name="cihaz" required>
-    <!-- 1–43 -->
-    <script>
-      for (let i = 1; i <= 43; i++) {
-        document.write(`<option value="${i}">${i}</option>`);
-      }
-    </script>
-  </select>
-  <br><br>
-
-  <label>Gün Grubu:</label>
-  <select name="gunGrubu" required>
-    <option>Pzt-Çrş-Cum</option>
-    <option>Sal-Per-Cts</option>
-  </select>
-  <br><br>
-
-  <label>Seans:</label>
-  <select name="seans" required>
-    <option>Sabah</option>
-    <option>Öğle</option>
-  </select>
-  <br><br>
-
-  <button type="submit">Hasta Kaydet</button>
-</form>
-
-<hr>
-
-
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Paneli</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-  <div class="dashboard">
-    <h1>Admin Paneli</h1>
+<meta charset="UTF-8">
+<title>Van Özel Diyaliz Merkezi | Admin</title>
 
-    <h3>Haftalık Saat Özeti</h3>
-    <div id="ozet"></div>
+<style>
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f2f4f7;
+  color: #333;
+}
 
-    <form method="POST" action="/haftalik-reset">
-      <button type="submit">Haftalık Reset</button>
-    </form>
+header {
+  background: #0b5ed7;
+  color: white;
+  padding: 20px;
+  font-size: 20px;
+}
 
-    <a href="/logout">Çıkış</a>
-  </div>
+.container {
+  max-width: 1100px;
+  margin: 30px auto;
+}
 
-  <script>
-    fetch("/seans-ozet")
-      .then(r => r.json())
-      .then(data => {
-        let html = "";
-        data.forEach(o => {
-          html += `<p>${o.hemsire} : ${o.saat} saat</p>`;
-        });
-        document.getElementById("ozet").innerHTML = html;
-      });
-  </script>
-</body>
-</html>
-<h3>Kayıtlı Hastalar</h3>
-<ul id="hastaListesi"></ul>
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
 
-<script>
-fetch("/admin/hastalar")
-  .then(r => r.json())
-  .then(data => {
-    const ul = document.getElementById("hastaListesi");
-    ul.innerHTML = "";
-    data.forEach(h => {
-      ul.innerHTML += `<li>
-        ${h.ad} | Cihaz ${h.cihaz} | ${h.seans} | ${h.gunGrubu}
-      </li>`;
-    });
-  });
-</script>
-<h2>Hemşire Ekle</h2>
+.card h2 {
+  margin-top: 0;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
 
-<form method="POST" action="/admin/hemsire-ekle">
-  <input name="adSoyad" placeholder="Ad Soyad" required />
-  <input name="tc" placeholder="TC Kimlik No" required maxlength="11" />
-  <button type="submit">Hemşire Ekle</button>
-</form>
+label {
+  font-weight: 600;
+  display: block;
+  margin-top: 10px;
+}
 
-<hr>
+input, select, button {
+  padding: 8px;
+  margin-top: 5px;
+  width: 100%;
+  max-width: 300px;
+}
 
-<h2>Hemşire Listesi</h2>
-<ul>
-  {{HEMSIRE_LISTESI}}
-</ul>
+button {
+  background: #0b5ed7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+button:hover {
+  background: #094db1;
+}
+
+.list {
+  margin-top: 15px;
+}
+
+.list li {
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.logout {
+  text-align: right;
+  margin-top: 10px;
+}
+
+.logout a {
+  color: #0b5ed7;
+  text-decoration
