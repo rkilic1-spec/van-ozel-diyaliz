@@ -72,6 +72,10 @@ app.post("/login", (req, res) => {
 
   res.send("Hatalı kullanıcı adı veya şifre");
 });
+// HEMŞİRE LOGIN SAYFASI
+app.get("/login/hemsire", (req, res) => {
+  res.sendFile(path.join(__dirname, "views/hemsire-login.html"));
+});
 
 
 // ---- KORUMALI SAYFA ----
@@ -164,3 +168,6 @@ app.post("/login/admin", (req, res) => {
     </script>
   `);
 });
+
+
+
