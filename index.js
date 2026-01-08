@@ -149,3 +149,9 @@ app.get("/logout", (req, res) => {
 app.listen(PORT, "0.0.0.0", () =>
   console.log("Server aktif:", PORT)
 );
+
+const { haftalikDagitimYap } = require("./engine/dagitimMotoru");
+
+// TEST için
+// haftalikDagitimYap("2026-01-06");
+
