@@ -36,13 +36,21 @@ app.get("/", (req, res) => {
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  if (username === USER.username && password === USER.password) {
-    req.session.user = username;
-    return res.redirect("/dashboard");
+  // ADMIN
+  if (username === "admin" && password === "1234") {
+    req.session.user = { username, role: "admin" };
+    return res.redirect("/admin");
+  }
+
+  // HEMŞİRE
+  if (username === "hemsire1" && password === "1234") {
+    req.session.user = { username, role: "hemsire" };
+    return res.redirect("/hemsire");
   }
 
   res.send("Hatalı kullanıcı adı veya şifre");
 });
+
 
 // ---- KORUMALI SAYFA ----
 app.get("/dashboard", (req, res) => {
