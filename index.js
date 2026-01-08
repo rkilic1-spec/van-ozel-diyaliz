@@ -1,65 +1,81 @@
 const http = require("http");
-const querystring = require("querystring");
-
 const PORT = process.env.PORT || 10000;
 
-// Kullanıcılar (şimdilik sabit)
-const USERS = {
-  admin: { password: "123456", role: "admin" },
-  hemsire1: { password: "1111", role: "hemsire" },
-  hemsire2: { password: "2222", role: "hemsire" }
-};
+// Geçici kullanıcılar (ileride DB olur)
+const users = [
+  { username: "admin", password: "1234", role: "admin" },
+  { username: "hemsire1", password: "1234", role: "hemsire" }
+];
 
 const server = http.createServer((req, res) => {
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
 
   // GİRİŞ SAYFASI
-  if (req.method === "GET") {
-    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-    res.end(`
-      <!doctype html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <title>Van Özel Diyaliz - Giriş</title>
-      </head>
-      <body style="font-family:Arial; background:#f4f4f4;">
-        <h2>VAN ÖZEL DİYALİZ MERKEZİ</h2>
-        <form method="POST">
-          <label>Kullanıcı Adı</label><br>
-          <input name="username" required><br><br>
-
-          <label>Şifre</label><br>
-          <input type="password" name="password" required><br><br>
-
-          <button type="submit">Giriş Yap</button>
-        </form>
-      </body>
-      </html>
+  if (req.method === "GET" && req.url === "/") {
+    return res.end(`
+      <h2>Van Özel Diyaliz Merkezi - Giriş</h2>
+      <form method="POST" action="/login">
+        <input name="username" placeholder="Kullanıcı adı" required /><br><br>
+        <input name="password" type="password" placeholder="Şifre" required /><br><br>
+        <button>Giriş Yap</button>
+      </form>
     `);
   }
 
-  // FORM GÖNDERİLİNCE
-  else if (req.method === "POST") {
+  // LOGIN
+  if (req.method === "POST" && req.url === "/login") {
     let body = "";
     req.on("data", chunk => body += chunk);
     req.on("end", () => {
-      const data = querystring.parse(body);
-      const user = USERS[data.username];
+      const data = new URLSearchParams(body);
+      const username = data.get("username");
+      const password = data.get("password");
 
-      if (user && user.password === data.password) {
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        res.end(`
-          <h2>Hoş geldin ${data.username}</h2>
-          <p>Yetki: ${user.role}</p>
-        `);
-      } else {
-        res.writeHead(401, { "Content-Type": "text/html; charset=utf-8" });
-        res.end("<h3>Hatalı kullanıcı adı veya şifre</h3>");
+      const user = users.find(
+        u => u.username === username && u.password === password
+      );
+
+      if (!user) {
+        return res.end("<h3>Hatalı giriş</h3><a href='/'>Geri</a>");
+      }
+
+      if (user.role === "admin") {
+        res.writeHead(302, { Location: "/admin" });
+        return res.end();
+      }
+
+      if (user.role === "hemsire") {
+        res.writeHead(302, { Location: "/hemsire" });
+        return res.end();
       }
     });
   }
+
+  // ADMIN PANEL
+  if (req.url === "/admin") {
+    return res.end(`
+      <h1>ADMIN PANELİ</h1>
+      <ul>
+        <li>Hemşire yönetimi</li>
+        <li>Hasta listesi</li>
+        <li>Raporlar</li>
+      </ul>
+      <a href="/">Çıkış</a>
+    `);
+  }
+
+  // HEMŞİRE PANEL
+  if (req.url === "/hemsire") {
+    return res.end(`
+      <h1>HEMŞİRE PANELİ</h1>
+      <p>Bugünkü hastalar burada görünecek</p>
+      <a href="/">Çıkış</a>
+    `);
+  }
+
+  res.end("Sayfa bulunamadı");
 });
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log("Server aktif, port:", PORT);
+  console.log("Server aktif:", PORT);
 });
