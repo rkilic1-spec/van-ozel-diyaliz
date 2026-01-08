@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 10000;
 
 // ===== MIDDLEWARE =====
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // 🔴 ÖNEMLİ
 app.use(
   session({
     secret: "van-diyaliz-secret",
@@ -52,7 +53,6 @@ app.post("/login/admin", (req, res) => {
 });
 
 app.post("/login/hemsire", (req, res) => {
-  // ŞİMDİLİK tek kullanıcı
   if (req.body.username === "hemsire" && req.body.password === "1234") {
     req.session.user = { role: "hemsire", hemsireId: 1 };
     return res.redirect("/hemsire");
@@ -71,9 +71,22 @@ app.get("/hemsire", requireHemsire, (req, res) => {
 
 // ===== DAĞITIMI ÇALIŞTIR (ADMIN) =====
 app.post("/admin/dagitim-calistir", requireAdmin, (req, res) => {
-  const { hafta } = req.body;
-  dagitimMotoru.calistir(hafta);
-  res.redirect("/admin");
+  console.log("➡️ DAĞITIM İSTEĞİ:", req.body);
+
+  try {
+    const { hafta } = req.body;
+
+    if (!hafta) {
+      throw new Error("hafta bilgisi gelmedi");
+    }
+
+    dagitimMotoru.calistir(hafta);
+
+    res.send("✅ Dağıtım başarıyla çalıştı");
+  } catch (err) {
+    console.error("❌ DAĞITIM HATASI:", err.message);
+    res.status(500).send("Dağıtım hatası: " + err.message);
+  }
 });
 
 // ===== LOGOUT =====
@@ -81,12 +94,13 @@ app.get("/logout", (req, res) => {
   req.session.destroy(() => res.redirect("/"));
 });
 
-// ===== SERVER =====
+// ===== GLOBAL ERROR HANDLER =====
 app.use((err, req, res, next) => {
   console.error("🔥 GLOBAL HATA:", err.stack);
   res.status(500).send("Sunucu hatası: " + err.message);
 });
 
+// ===== SERVER =====
 app.listen(PORT, "0.0.0.0", () =>
   console.log("Server aktif:", PORT)
 );
