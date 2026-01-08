@@ -104,3 +104,27 @@ app.use((err, req, res, next) => {
 app.listen(PORT, "0.0.0.0", () =>
   console.log("Server aktif:", PORT)
 );
+///HEMSİRE EKLE///
+const fs = require("fs");
+
+function oku(dosya) {
+  return JSON.parse(fs.readFileSync(path.join(__dirname, "data", dosya), "utf8"));
+}
+
+function yaz(dosya, veri) {
+  fs.writeFileSync(
+    path.join(__dirname, "data", dosya),
+    JSON.stringify(veri, null, 2)
+  );
+}
+
+  hemsireler.push({
+    id: Date.now(),
+    adSoyad,
+    tc,
+    aktif: true
+  });
+
+  yaz("hemsireler.json", hemsireler);
+  res.redirect("/admin");
+});
