@@ -118,3 +118,21 @@ app.post("/haftalik-reset", (req, res) => {
   res.redirect("/admin");
 });
 
+app.get("/login/admin", (req, res) => {
+  res.sendFile(path.join(__dirname, "views/admin-login.html"));
+});
+app.post("/login/admin", (req, res) => {
+  const { username, password } = req.body;
+
+  if (username === "admin" && password === "1234") {
+    req.session.user = { username, role: "admin" };
+    return res.redirect("/admin");
+  }
+
+  res.send(`
+    <script>
+      alert("Hatalı kullanıcı adı veya şifre");
+      window.location.href = "/login/admin";
+    </script>
+  `);
+});
