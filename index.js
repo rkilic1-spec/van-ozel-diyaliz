@@ -128,3 +128,49 @@ function yaz(dosya, veri) {
   yaz("hemsireler.json", hemsireler);
   res.redirect("/admin");
 });
+const fs = require("fs");
+
+// JSON yardımcıları (index.js içinde YOKSA)
+function oku(dosya) {
+  return JSON.parse(
+    fs.readFileSync(path.join(__dirname, "data", dosya), "utf8")
+  );
+}
+
+function yaz(dosya, veri) {
+  fs.writeFileSync(
+    path.join(__dirname, "data", dosya),
+    JSON.stringify(veri, null, 2)
+  );
+}
+
+// ===== HEMŞİRE EKLE =====
+app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
+  try {
+    const { adSoyad, tc } = req.body;
+
+    if (!adSoyad || !tc) {
+      return res.status(400).send("Ad Soyad ve TC zorunlu");
+    }
+
+    let hemsireler = oku("hemsireler.json");
+
+    if (hemsireler.find(h => h.tc === tc)) {
+      return res.send("Bu TC ile hemşire zaten kayıtlı");
+    }
+
+    hemsireler.push({
+      id: Date.now(),
+      adSoyad,
+      tc,
+      aktif: true
+    });
+
+    yaz("hemsireler.json", hemsireler);
+
+    res.redirect("/admin");
+  } catch (err) {
+    console.error("❌ HEMŞİRE EKLE HATASI:", err);
+    res.status(500).send("Hemşire ekleme hatası");
+  }
+});
