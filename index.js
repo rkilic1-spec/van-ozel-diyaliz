@@ -82,6 +82,11 @@ app.get("/logout", (req, res) => {
 });
 
 // ===== SERVER =====
+app.use((err, req, res, next) => {
+  console.error("🔥 GLOBAL HATA:", err.stack);
+  res.status(500).send("Sunucu hatası: " + err.message);
+});
+
 app.listen(PORT, "0.0.0.0", () =>
   console.log("Server aktif:", PORT)
 );
