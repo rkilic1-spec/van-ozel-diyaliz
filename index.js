@@ -138,8 +138,16 @@ app.post("/haftalik-reset", (req, res) => {
   res.redirect("/admin");
 });
 
-app.get("/login/admin", (req, res) => {
-  res.sendFile(path.join(__dirname, "views/admin-login.html"));
+// 🔐 YETKİ KORUMALI SAYFALAR
+
+app.get("/admin", requireAdmin, (req, res) => {
+  res.sendFile(path.join(__dirname, "views/admin.html"));
+});
+
+app.get("/hemsire", requireHemsire, (req, res) => {
+  res.sendFile(path.join(__dirname, "views/hemsire.html"));
+});
+
 });
 app.post("/login/admin", (req, res) => {
   const { username, password } = req.body;
