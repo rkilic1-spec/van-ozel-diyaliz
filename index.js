@@ -22,6 +22,10 @@ let hemsireIdCounter = 1;
 let hastalar = []; // {id, ad, cihaz, seans, gunGrubu, hemsireId}
 let hastaIdCounter = 1;
 
+app.get("/admin/hemsireler", requireAdmin, (req, res) => {
+  res.json(hemsireler);
+});
+
 // ===== YETKİ =====
 function requireAdmin(req, res, next) {
   if (!req.session.user || req.session.user.role !== "admin") {
