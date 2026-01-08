@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Van Özel Diyaliz Merkezi | Admin</title>
+<title>Van Özel Diyaliz Merkezi | Admin Paneli</title>
 
 <style>
 body {
@@ -16,19 +16,61 @@ header {
   background: #0b5ed7;
   color: white;
   padding: 20px;
-  font-size: 20px;
+  font-size: 22px;
+  font-weight: bold;
 }
 
-.container {
-  max-width: 1100px;
+.layout {
+  display: flex;
+  max-width: 1300px;
   margin: 30px auto;
+}
+
+/* SOL MENÜ */
+.sidebar {
+  width: 230px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 15px;
+  margin-right: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.sidebar button {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 12px;
+  border: none;
+  background: #0b5ed7;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.sidebar button:hover {
+  background: #094db1;
+}
+
+.sidebar a {
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+  text-decoration: none;
+  color: #0b5ed7;
+  font-weight: bold;
+}
+
+/* İÇERİK */
+.content {
+  flex: 1;
 }
 
 .card {
   background: white;
   border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 25px;
+  padding: 25px;
+  margin-bottom: 20px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
@@ -39,48 +81,33 @@ header {
 }
 
 label {
-  font-weight: 600;
   display: block;
-  margin-top: 10px;
+  font-weight: 600;
+  margin-top: 12px;
 }
 
-input, select, button {
+input, select {
+  width: 300px;
   padding: 8px;
   margin-top: 5px;
-  width: 100%;
-  max-width: 300px;
 }
 
-button {
+button.submit {
+  margin-top: 15px;
+  padding: 10px 20px;
   background: #0b5ed7;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
-  margin-top: 15px;
 }
 
-button:hover {
+button.submit:hover {
   background: #094db1;
 }
 
-.list {
-  margin-top: 15px;
-}
-
-.list li {
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.logout {
-  text-align: right;
-}
-
-.logout a {
-  color: #0b5ed7;
-  text-decoration: none;
-  font-weight: 600;
+.hidden {
+  display: none;
 }
 </style>
 </head>
@@ -91,77 +118,92 @@ button:hover {
   Van Özel Diyaliz Merkezi – Admin Paneli
 </header>
 
-<div class="container">
+<div class="layout">
 
-  <!-- HASTA EKLE -->
-  <div class="card">
-    <h2>Hasta Ekle</h2>
-    <form method="POST" action="/admin/hasta-ekle">
-      <label>Hasta Adı</label>
-      <input name="ad" required>
+  <!-- SOL MENÜ -->
+  <aside class="sidebar">
+    <button onclick="show('hasta')">🩺 Hasta Ekle</button>
+    <button onclick="show('hemsire')">👩‍⚕️ Hemşire Ekle</button>
+    <button onclick="show('liste')">📋 Hemşire Listesi</button>
+    <a href="/logout">Çıkış</a>
+  </aside>
 
-      <label>Cihaz</label>
-      <select name="cihaz">
-        <option>1</option><option>2</option><option>3</option>
-        <option>4</option><option>5</option><option>6</option>
-      </select>
+  <!-- SAĞ İÇERİK -->
+  <main class="content">
 
-      <label>Gün Grubu</label>
-      <select name="gunGrubu">
-        <option>Pzt-Çrş-Cum</option>
-        <option>Sal-Per-Cts</option>
-      </select>
+    <!-- HASTA EKLE -->
+    <section id="hasta" class="card">
+      <h2>Hasta Ekle</h2>
 
-      <label>Seans</label>
-      <select name="seans">
-        <option>Sabah</option>
-        <option>Öğle</option>
-        <option>Akşam</option>
-      </select>
+      <form method="POST" action="/admin/hasta-ekle">
+        <label>Hasta Adı</label>
+        <input name="ad" required>
 
-      <button>Hasta Kaydet</button>
-    </form>
-  </div>
+        <label>Cihaz</label>
+        <select name="cihaz">
+          <!-- 1-43 -->
+          <script>
+            for (let i = 1; i <= 43; i++) {
+              document.write(`<option value="${i}">${i}</option>`);
+            }
+          </script>
+        </select>
 
-  <!-- HEMŞİRE EKLE -->
-  <div class="card">
-    <h2>Hemşire Ekle</h2>
-    <form method="POST" action="/admin/hemsire-ekle">
-      <label>Ad Soyad</label>
-      <input name="adSoyad" required>
+        <label>Gün Grubu</label>
+        <select name="gunGrubu">
+          <option>Pzt-Çrş-Cum</option>
+          <option>Sal-Per-Cts</option>
+        </select>
 
-      <label>TC Kimlik No</label>
-      <input name="tc" required>
+        <label>Seans</label>
+        <select name="seans">
+          <option>Sabah</option>
+          <option>Öğle</option>
+          <option>Akşam</option>
+        </select>
 
-      <button>Hemşire Ekle</button>
-    </form>
-  </div>
+        <button class="submit">Hasta Kaydet</button>
+      </form>
+    </section>
 
-  <!-- HEMŞİRE LİSTESİ -->
-  <div class="card">
-    <h2>Hemşire Listesi</h2>
-    <ul class="list" id="hemsireListesi">Yükleniyor...</ul>
-  </div>
+    <!-- HEMŞİRE EKLE -->
+    <section id="hemsire" class="card hidden">
+      <h2>Hemşire Ekle</h2>
 
-  <div class="logout">
-    <a href="/logout">Çıkış Yap</a>
-  </div>
+      <form method="POST" action="/admin/hemsire-ekle">
+        <label>Ad Soyad</label>
+        <input name="adSoyad" required>
 
+        <label>TC Kimlik No</label>
+        <input name="tc" maxlength="11" required>
+
+        <button class="submit">Hemşire Ekle</button>
+      </form>
+    </section>
+
+    <!-- LİSTE -->
+    <section id="liste" class="card hidden">
+      <h2>Hemşire Listesi</h2>
+      <ul id="hemsireListesi"></ul>
+    </section>
+
+  </main>
 </div>
 
 <script>
+function show(id) {
+  document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+}
+
+// Hemşire listesini getir
 fetch("/admin/hemsireler")
   .then(res => res.json())
   .then(data => {
     const ul = document.getElementById("hemsireListesi");
     ul.innerHTML = "";
     data.forEach(h => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        ${h.adSoyad} (${h.tc}) - 
-        ${h.aktif ? "🟢 Aktif" : "🔴 Pasif"}
-      `;
-      ul.appendChild(li);
+      ul.innerHTML += `<li>${h.adSoyad} (${h.tc})</li>`;
     });
   });
 </script>
