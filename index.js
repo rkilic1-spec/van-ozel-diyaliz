@@ -75,6 +75,36 @@ app.get("/hemsire", requireHemsire, (req, res) => {
   res.sendFile(path.join(__dirname, "views/hemsire.html"));
 });
 
+// ===== HASTA EKLE =====
+app.post("/admin/hasta-ekle", requireAdmin, (req, res) => {
+  const { ad, cihaz, seans, gunGrubu } = req.body;
+
+  // ÇAKIŞMA KONTROLÜ
+  const cakisma = hastalar.find(
+    h => h.cihaz == cihaz && h.seans === seans
+  );
+
+  if (cakisma) {
+    return res.send(`
+      <script>
+        alert("Bu cihaz ve seans için zaten bir hasta var!");
+        window.location.href = "/admin";
+      </script>
+    `);
+  }
+
+  hastalar.push({
+    id: hastaId++,
+    ad,
+    cihaz: Number(cihaz),
+    seans,
+    gunGrubu
+  });
+
+  res.redirect("/admin");
+});
+
+
 // ===== LOGOUT =====
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
@@ -86,3 +116,9 @@ app.get("/logout", (req, res) => {
 app.listen(PORT, "0.0.0.0", () => {
   console.log("Server aktif, port:", PORT);
 });
+
+
+// ===== HASTALAR =====
+let hastalar = [];
+let hastaId = 1;
+
