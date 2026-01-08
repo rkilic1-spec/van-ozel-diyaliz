@@ -125,6 +125,7 @@ button.submit:hover {
     <button onclick="show('hasta')">🩺 Hasta Ekle</button>
     <button onclick="show('hemsire')">👩‍⚕️ Hemşire Ekle</button>
     <button onclick="show('liste')">📋 Hemşire Listesi</button>
+    <button onclick="show('dagitim')">🔄 Haftalık Dağıtım</button>
     <a href="/logout">Çıkış</a>
   </aside>
 
@@ -140,8 +141,7 @@ button.submit:hover {
         <input name="ad" required>
 
         <label>Cihaz</label>
-        <select name="cihaz">
-          <!-- 1-43 -->
+        <select name="cihaz" required>
           <script>
             for (let i = 1; i <= 43; i++) {
               document.write(`<option value="${i}">${i}</option>`);
@@ -149,17 +149,10 @@ button.submit:hover {
           </script>
         </select>
 
-        <label>Gün Grubu</label>
-        <select name="gunGrubu">
-          <option>Pzt-Çrş-Cum</option>
-          <option>Sal-Per-Cts</option>
-        </select>
-
         <label>Seans</label>
-        <select name="seans">
+        <select name="seans" required>
           <option>Sabah</option>
           <option>Öğle</option>
-          <option>Akşam</option>
         </select>
 
         <button class="submit">Hasta Kaydet</button>
@@ -181,10 +174,21 @@ button.submit:hover {
       </form>
     </section>
 
-    <!-- LİSTE -->
+    <!-- HEMŞİRE LİSTESİ -->
     <section id="liste" class="card hidden">
       <h2>Hemşire Listesi</h2>
       <ul id="hemsireListesi"></ul>
+    </section>
+
+    <!-- DAĞITIM -->
+    <section id="dagitim" class="card hidden">
+      <h2>Haftalık Dağıtımı Çalıştır</h2>
+
+      <form method="POST" action="/admin/dagitim-calistir">
+        <label>Hafta Kodu</label>
+        <input name="hafta" value="2026-01-HAFTA-1" required>
+        <button class="submit">Dağıtımı Başlat</button>
+      </form>
     </section>
 
   </main>
@@ -210,13 +214,3 @@ fetch("/admin/hemsireler")
 
 </body>
 </html>
-<form method="POST" action="/admin/dagitim-calistir">
-  <input name="hafta" placeholder="2026-01-HAFTA-1" required />
-  <button>Dağıtımı Çalıştır</button>
-</form>
-
-
-<form method="POST" action="/admin/dagitim-calistir">
-  <input type="text" name="hafta" value="2026-01-HAFTA-1" />
-  <button type="submit">Dağıtımı Çalıştır</button>
-</form>
