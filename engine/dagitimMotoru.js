@@ -1,13 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 
-// ===================
-// JSON yardımcıları
-// ===================
 function oku(dosya) {
-  return JSON.parse(
-    fs.readFileSync(path.join(__dirname, "..", "data", dosya), "utf-8")
-  );
+  const yol = path.join(__dirname, "..", "data", dosya);
+  if (!fs.existsSync(yol)) return [];
+  return JSON.parse(fs.readFileSync(yol, "utf8"));
 }
 
 function yaz(dosya, veri) {
@@ -17,27 +14,29 @@ function yaz(dosya, veri) {
   );
 }
 
-// ===================
-// ANA DAĞITIM FONKSİYONU
-// ===================
-function haftalikDagitimYap(hafta) {
+function calistir(hafta) {
   console.log("🔵 DAĞITIM MOTORU ÇALIŞTI →", hafta);
 
-  const hastalar = oku("hastalar.json").filter(h => h.aktif);
-  const hemsireler = oku("hemsireler.json").filter(h => h.aktif);
-  const izinler = oku("izinler.json");
-  let haftalar = oku("haftalar.json");
+  const hastalar = oku("hastalar.json").filter(h => h.aktif !== false);
+  const hemsireler = oku("hemsireler.json").filter(h => h.aktif !== false);
+  const haftalar = oku("haftalar.json");
 
-  // ---- Hafta kontrolü ----
-  const mevcutHafta = haftalar.find(h => h.hafta === hafta);
-
-  if (mevcutHafta && mevcutHafta.kilitli) {
-    console.log("🟡 Hafta kilitli, sadece BOŞ hastalar dağıtılacak");
+  if (!hafta) {
+    throw new Error("Hafta bilgisi gelmedi");
   }
 
-  // ---- Adil hedef hesabı ----
+  const mevcut = haftalar.find(h => h.hafta === hafta);
+  if (mevcut && mevcut.kilitli) {
+    console.log("⛔ Hafta kilitli");
+    return;
+  }
+
   const toplamHasta = hastalar.length;
   const hemsireSayisi = hemsireler.length;
+
+  if (hemsireSayisi === 0) {
+    throw new Error("Hiç hemşire yok");
+  }
 
   const taban = Math.floor(toplamHasta / hemsireSayisi);
   const kalan = toplamHasta % hemsireSayisi;
@@ -51,61 +50,40 @@ function haftalikDagitimYap(hafta) {
 
   let atamalar = [];
 
-  // ---- Hastaları cihaz sırasına göre sırala ----
   hastalar.sort((a, b) => a.cihaz - b.cihaz);
 
   for (let hasta of hastalar) {
-    // Eğer kilitli hafta varsa ve hasta zaten atanmışsa geç
-    if (mevcutHafta && mevcutHafta.kilitli) {
-      const varMi = mevcutHafta.atamalar.find(a => a.hastaId === hasta.id);
-      if (varMi) continue;
-    }
-
-    // ---- Uygun hemşireler ----
     let uygunlar = hedefler
-      .filter(h =>
-        h.mevcutHasta < h.hedefHasta &&
-        h.mevcutSeans + hasta.gunler.length <= 10
-      )
+      .filter(h => h.mevcutHasta < h.hedefHasta && h.mevcutSeans < 10)
       .sort((a, b) => a.mevcutHasta - b.mevcutHasta);
 
     if (uygunlar.length === 0) continue;
 
     let secilen = uygunlar[0];
-
     secilen.mevcutHasta++;
-    secilen.mevcutSeans += hasta.gunler.length;
+    secilen.mevcutSeans += (hasta.gunler?.length || 1);
 
     atamalar.push({
       hafta,
       hemsireId: secilen.hemsireId,
       hastaId: hasta.id,
-      gunler: hasta.gunler,
+      cihaz: hasta.cihaz,
       seans: hasta.seans,
-      cihaz: hasta.cihaz
+      gunler: hasta.gunler || []
     });
   }
 
-  // ---- Haftayı kaydet / güncelle ----
-  if (mevcutHafta) {
-    mevcutHafta.atamalar.push(...atamalar);
-  } else {
-    haftalar.push({
-      hafta,
-      kilitli: true,
-      atamalar
-    });
-  }
+  haftalar.push({
+    hafta,
+    kilitli: true,
+    atamalar
+  });
 
   yaz("haftalar.json", haftalar);
+
   console.log("✅ Haftalık dağıtım tamamlandı");
 }
 
-// ===================
-// DIŞARI AÇILAN FONKSİYON
-// ===================
-function calistir(hafta) {
-  haftalikDagitimYap(hafta);
-}
-
-module.exports = { calistir };
+module.exports = {
+  calistir
+};
