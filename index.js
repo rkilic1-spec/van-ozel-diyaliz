@@ -68,3 +68,43 @@ app.get("/logout", (req, res) => {
 app.listen(PORT, "0.0.0.0", () => {
   console.log("Server aktif, port:", PORT);
 });
+
+// ===== HEMŞİRE TAKİP =====
+let seanslar = [];
+const SEANS_SAAT = 4.5;
+
+app.get("/hemsire", (req, res) => {
+  if (!req.session.user) return res.redirect("/");
+  res.sendFile(path.join(__dirname, "views/hemsire.html"));
+});
+
+app.get("/admin", (req, res) => {
+  if (!req.session.user) return res.redirect("/");
+  res.sendFile(path.join(__dirname, "views/admin.html"));
+});
+
+app.post("/seans-ekle", (req, res) => {
+  const { hemsire, gun, vardiya } = req.body;
+  seanslar.push({ hemsire, gun, vardiya });
+  res.redirect("/hemsire");
+});
+
+app.get("/seanslar", (req, res) => {
+  res.json(seanslar);
+});
+
+app.get("/seans-ozet", (req, res) => {
+  const ozet = {};
+  seanslar.forEach(s => {
+    ozet[s.hemsire] = (ozet[s.hemsire] || 0) + SEANS_SAAT;
+  });
+  res.json(
+    Object.keys(ozet).map(h => ({ hemsire: h, saat: ozet[h] }))
+  );
+});
+
+app.post("/haftalik-reset", (req, res) => {
+  seanslar = [];
+  res.redirect("/admin");
+});
+
