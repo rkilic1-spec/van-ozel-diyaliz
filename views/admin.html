@@ -69,15 +69,102 @@ button:hover {
 }
 
 .list li {
-  padding: 6px 0;
+  padding: 8px 0;
   border-bottom: 1px solid #eee;
 }
 
 .logout {
   text-align: right;
-  margin-top: 10px;
 }
 
 .logout a {
   color: #0b5ed7;
-  text-decoration
+  text-decoration: none;
+  font-weight: 600;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  Van Özel Diyaliz Merkezi – Admin Paneli
+</header>
+
+<div class="container">
+
+  <!-- HASTA EKLE -->
+  <div class="card">
+    <h2>Hasta Ekle</h2>
+    <form method="POST" action="/admin/hasta-ekle">
+      <label>Hasta Adı</label>
+      <input name="ad" required>
+
+      <label>Cihaz</label>
+      <select name="cihaz">
+        <option>1</option><option>2</option><option>3</option>
+        <option>4</option><option>5</option><option>6</option>
+      </select>
+
+      <label>Gün Grubu</label>
+      <select name="gunGrubu">
+        <option>Pzt-Çrş-Cum</option>
+        <option>Sal-Per-Cts</option>
+      </select>
+
+      <label>Seans</label>
+      <select name="seans">
+        <option>Sabah</option>
+        <option>Öğle</option>
+        <option>Akşam</option>
+      </select>
+
+      <button>Hasta Kaydet</button>
+    </form>
+  </div>
+
+  <!-- HEMŞİRE EKLE -->
+  <div class="card">
+    <h2>Hemşire Ekle</h2>
+    <form method="POST" action="/admin/hemsire-ekle">
+      <label>Ad Soyad</label>
+      <input name="adSoyad" required>
+
+      <label>TC Kimlik No</label>
+      <input name="tc" required>
+
+      <button>Hemşire Ekle</button>
+    </form>
+  </div>
+
+  <!-- HEMŞİRE LİSTESİ -->
+  <div class="card">
+    <h2>Hemşire Listesi</h2>
+    <ul class="list" id="hemsireListesi">Yükleniyor...</ul>
+  </div>
+
+  <div class="logout">
+    <a href="/logout">Çıkış Yap</a>
+  </div>
+
+</div>
+
+<script>
+fetch("/admin/hemsireler")
+  .then(res => res.json())
+  .then(data => {
+    const ul = document.getElementById("hemsireListesi");
+    ul.innerHTML = "";
+    data.forEach(h => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        ${h.adSoyad} (${h.tc}) - 
+        ${h.aktif ? "🟢 Aktif" : "🔴 Pasif"}
+      `;
+      ul.appendChild(li);
+    });
+  });
+</script>
+
+</body>
+</html>
