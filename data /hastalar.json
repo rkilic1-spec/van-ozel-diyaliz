@@ -1,1 +1,12 @@
+{
+  "id": 1,
+  "adSoyad": "Ali Yılmaz",
+  "cihaz": 12,
+  "seans": "Sabah",
+  "gunler": ["Pazartesi", "Çarşamba", "Cuma"],
+  "aktif": true,
+  "misafir": false,
+  "baslangicTarihi": "2026-01-01",
+  "bitisTarihi": null
+}
 
