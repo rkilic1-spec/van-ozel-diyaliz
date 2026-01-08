@@ -1,3 +1,40 @@
+<h2>Hasta Ekle</h2>
+
+<form method="POST" action="/admin/hasta-ekle">
+  <input name="ad" placeholder="Hasta Adı" required><br><br>
+
+  <label>Cihaz:</label>
+  <select name="cihaz" required>
+    <!-- 1–43 -->
+    <script>
+      for (let i = 1; i <= 43; i++) {
+        document.write(`<option value="${i}">${i}</option>`);
+      }
+    </script>
+  </select>
+  <br><br>
+
+  <label>Gün Grubu:</label>
+  <select name="gunGrubu" required>
+    <option>Pzt-Çrş-Cum</option>
+    <option>Sal-Per-Cts</option>
+  </select>
+  <br><br>
+
+  <label>Seans:</label>
+  <select name="seans" required>
+    <option>Sabah</option>
+    <option>Öğle</option>
+  </select>
+  <br><br>
+
+  <button type="submit">Hasta Kaydet</button>
+</form>
+
+<hr>
+
+
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -32,3 +69,19 @@
   </script>
 </body>
 </html>
+<h3>Kayıtlı Hastalar</h3>
+<ul id="hastaListesi"></ul>
+
+<script>
+fetch("/admin/hastalar")
+  .then(r => r.json())
+  .then(data => {
+    const ul = document.getElementById("hastaListesi");
+    ul.innerHTML = "";
+    data.forEach(h => {
+      ul.innerHTML += `<li>
+        ${h.ad} | Cihaz ${h.cihaz} | ${h.seans} | ${h.gunGrubu}
+      </li>`;
+    });
+  });
+</script>
