@@ -17,6 +17,24 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
+  const { adSoyad, tc } = req.body;
+
+  // TC kontrol
+  const varMi = hemsireler.find(h => h.tc === tc);
+  if (varMi) {
+    return res.send("Bu TC ile hemşire zaten kayıtlı");
+  }
+
+  hemsireler.push({
+    id: hemsireIdCounter++,
+    adSoyad,
+    tc,
+    aktif: true
+  });
+
+  res.redirect("/admin");
+});
 
 // ===== YETKİ KONTROLLERİ =====
 function requireAdmin(req, res, next) {
