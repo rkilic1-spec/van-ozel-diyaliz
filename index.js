@@ -82,6 +82,35 @@ app.get("/hemsire", requireHemsire, (req, res) => {
 app.post("/admin/hasta-ekle", requireAdmin, (req, res) => {
   const { ad, cihaz, seans, gunGrubu } = req.body;
 
+  const cakisma = hastalar.find(
+    h => h.cihaz == cihaz && h.seans === seans
+  );
+
+  if (cakisma) {
+    return res.send(`
+      <script>
+        alert("Bu cihaz ve seans için zaten bir hasta var!");
+        window.location.href = "/admin";
+      </script>
+    `);
+  }
+
+  hastalar.push({
+    id: hastaId++,
+    ad,
+    cihaz: Number(cihaz),
+    seans,
+    gunGrubu,
+    hemsireId: null
+  });
+
+  // 🔁 DAĞITIMI ÇALIŞTIR
+  hemsireHastaDagitimi();
+
+  res.redirect("/admin");
+});
+
+
   // ÇAKIŞMA KONTROLÜ
   const cakisma = hastalar.find(
     h => h.cihaz == cihaz && h.seans === seans
@@ -107,6 +136,58 @@ app.post("/admin/hasta-ekle", requireAdmin, (req, res) => {
   res.redirect("/admin");
 });
 
+// ===== HEMŞİRELER =====
+const hemsireler = [
+  {
+    id: 1,
+    ad: "Ayşe",
+    anaCihazlar: [1, 2, 3, 4, 5]
+  },
+  {
+    id: 2,
+    ad: "Fatma",
+    anaCihazlar: [6, 7, 8, 9, 10]
+  },
+  {
+    id: 3,
+    ad: "Zeynep",
+    anaCihazlar: [11, 12, 13, 14, 15]
+  }
+];
+function hemsireHastaDagitimi() {
+  // Her hastanın sorumlu hemşiresini sıfırla
+  hastalar.forEach(h => h.hemsireId = null);
+
+  hemsireler.forEach(hemsire => {
+    let sayac = 0;
+
+    // 1️⃣ Önce ana cihazlardaki hastalar
+    hastalar.forEach(h => {
+      if (
+        sayac < 5 &&
+        hemsire.anaCihazlar.includes(h.cihaz) &&
+        h.hemsireId === null
+      ) {
+        h.hemsireId = hemsire.id;
+        sayac++;
+      }
+    });
+
+    // 2️⃣ Eksikse diğer cihazlardan tamamla
+    if (sayac < 5) {
+      hastalar.forEach(h => {
+        if (
+          sayac < 5 &&
+          !hemsire.anaCihazlar.includes(h.cihaz) &&
+          h.hemsireId === null
+        ) {
+          h.hemsireId = hemsire.id;
+          sayac++;
+        }
+      });
+    }
+  });
+}
 
 // ===== LOGOUT =====
 app.get("/logout", (req, res) => {
@@ -125,3 +206,10 @@ app.listen(PORT, "0.0.0.0", () => {
 let hastalar = [];
 let hastaId = 1;
 
+app.get("/hemsire/hastalar", requireHemsire, (req, res) => {
+  const hemsire = hemsireler.find(h => h.ad === req.session.user.username);
+
+  const liste = hastalar.filter(h => h.hemsireId === hemsire.id);
+
+  res.json(liste);
+});
