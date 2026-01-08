@@ -1,9 +1,8 @@
-const dagitimMotoru = require("./engine/dagitimMotoru");
-
-
 const express = require("express");
 const session = require("express-session");
 const path = require("path");
+
+const dagitimMotoru = require("./engine/dagitimMotoru");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -17,17 +16,6 @@ app.use(
     saveUninitialized: true,
   })
 );
-
-// ===== VERİLER =====
-let hemsireler = []; // {id, adSoyad, tc, aktif}
-let hemsireIdCounter = 1;
-
-let hastalar = []; // {id, ad, cihaz, seans, gunGrubu, hemsireId}
-let hastaIdCounter = 1;
-
-app.get("/admin/hemsireler", requireAdmin, (req, res) => {
-  res.json(hemsireler);
-});
 
 // ===== YETKİ =====
 function requireAdmin(req, res, next) {
@@ -64,83 +52,28 @@ app.post("/login/admin", (req, res) => {
 });
 
 app.post("/login/hemsire", (req, res) => {
+  // ŞİMDİLİK tek kullanıcı
   if (req.body.username === "hemsire" && req.body.password === "1234") {
-    req.session.user = { role: "hemsire" };
+    req.session.user = { role: "hemsire", hemsireId: 1 };
     return res.redirect("/hemsire");
   }
   res.send("Hatalı hemşire girişi");
 });
 
-// ===== ADMIN PANEL =====
+// ===== PANELLER =====
 app.get("/admin", requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, "views/admin.html"));
 });
 
-// ===== HEMŞİRE PANEL =====
 app.get("/hemsire", requireHemsire, (req, res) => {
   res.sendFile(path.join(__dirname, "views/hemsire.html"));
 });
 
-// ===== HEMŞİRE EKLE =====
-app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
-  const { adSoyad, tc } = req.body;
-
-  if (hemsireler.find(h => h.tc === tc)) {
-    return res.send("Bu TC ile hemşire zaten var");
-  }
-
-  hemsireler.push({
-    id: hemsireIdCounter++,
-    adSoyad,
-    tc,
-    aktif: true,
-  });
-
+// ===== DAĞITIMI ÇALIŞTIR (ADMIN) =====
+app.post("/admin/dagitim-calistir", requireAdmin, (req, res) => {
+  const { hafta } = req.body;
+  dagitimMotoru.calistir(hafta);
   res.redirect("/admin");
-});
-
-// ===== HASTA EKLE =====
-app.post("/admin/hasta-ekle", requireAdmin, (req, res) => {
-  const { ad, cihaz, seans, gunGrubu } = req.body;
-
-  if (hastalar.find(h => h.cihaz == cihaz && h.seans === seans)) {
-    return res.send("Bu cihaz ve seans dolu");
-  }
-
-  hastalar.push({
-    id: hastaIdCounter++,
-    ad,
-    cihaz: Number(cihaz),
-    seans,
-    gunGrubu,
-    hemsireId: null,
-  });
-
-  otomatikDagit();
-  res.redirect("/admin");
-});
-
-// ===== OTOMATİK DAĞITIM =====
-function otomatikDagit() {
-  hastalar.forEach(h => (h.hemsireId = null));
-
-  hemsireler
-    .filter(h => h.aktif)
-    .forEach(hemsire => {
-      let sayac = 0;
-
-      hastalar.forEach(hasta => {
-        if (sayac < 5 && hasta.hemsireId === null) {
-          hasta.hemsireId = hemsire.id;
-          sayac++;
-        }
-      });
-    });
-}
-
-// ===== HEMŞİRE HASTALARI =====
-app.get("/hemsire/hastalar", requireHemsire, (req, res) => {
-  res.json(hastalar);
 });
 
 // ===== LOGOUT =====
@@ -152,9 +85,3 @@ app.get("/logout", (req, res) => {
 app.listen(PORT, "0.0.0.0", () =>
   console.log("Server aktif:", PORT)
 );
-
-const { haftalikDagitimYap } = require("./engine/dagitimMotoru");
-
-// TEST için
-// haftalikDagitimYap("2026-01-06");
-
