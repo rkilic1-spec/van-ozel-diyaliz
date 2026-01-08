@@ -234,3 +234,14 @@ app.get("/hemsire/hastalar", requireHemsire, (req, res) => {
 
   res.json(liste);
 });
+app.get("/admin", requireAdmin, (req, res) => {
+  let liste = hemsireler.map(h => `
+    <li>
+      ${h.adSoyad} (${h.tc}) - 
+      ${h.aktif ? "🟢 Aktif" : "🔴 Pasif"}
+      <a href="/admin/hemsire-toggle/${h.id}">[Değiştir]</a>
+    </li>
+  `).join("");
+
+  res.sendFile(path.join(__dirname, "views/admin.html"));
+});
