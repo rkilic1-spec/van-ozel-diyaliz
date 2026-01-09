@@ -42,7 +42,7 @@ function requireAdmin(req, res, next) {
 /* ================== LOGIN ================== */
 app.get("/", (req, res) => res.redirect("/login/admin"));
 
-app.get poss("/login/admin", (req, res) => {
+app.get("/login/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "views/admin-login.html"));
 });
 
