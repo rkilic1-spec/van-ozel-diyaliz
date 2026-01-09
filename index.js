@@ -51,6 +51,41 @@ app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
 
   const dosyaYolu = path.join(__dirname, "data", "hemsireler.json");
 
+  // ===== HASTA EKLE =====
+app.post("/admin/hasta-ekle", requireAdmin, (req, res) => {
+  const { ad, cihaz, gunGrubu, seans } = req.body;
+
+  if (!ad || !cihaz || !gunGrubu || !seans) {
+    return res.status(400).send("Eksik hasta bilgisi");
+  }
+
+  const dosyaYolu = path.join(__dirname, "data", "hastalar.json");
+
+  let hastalar = [];
+  if (fs.existsSync(dosyaYolu)) {
+    hastalar = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
+  }
+
+  // Aynı cihaz + aynı seans doluluk kontrolü
+  if (hastalar.find(h => h.cihaz == cihaz && h.seans === seans)) {
+    return res.send("Bu cihaz ve seans dolu");
+  }
+
+  hastalar.push({
+    id: Date.now(),
+    ad,
+    cihaz: Number(cihaz),
+    gunGrubu,
+    seans,
+    aktif: true
+  });
+
+  fs.writeFileSync(dosyaYolu, JSON.stringify(hastalar, null, 2));
+
+  console.log("✅ Hasta eklendi:", ad);
+  res.redirect("/admin");
+});
+
   // 🔥 DOSYA YOKSA OLUŞTUR
   if (!fs.existsSync(dosyaYolu)) {
     fs.mkdirSync(path.join(__dirname, "data"), { recursive: true });
