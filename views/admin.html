@@ -2,112 +2,65 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Van Özel Diyaliz Merkezi | Admin Paneli</title>
+<title>Van Özel Diyaliz Merkezi | Admin</title>
 
 <style>
 body {
   margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: Arial, sans-serif;
   background: #f2f4f7;
-  color: #333;
 }
 
 header {
   background: #0b5ed7;
   color: white;
-  padding: 20px;
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.layout {
-  display: flex;
-  max-width: 1300px;
-  margin: 30px auto;
-}
-
-/* SOL MENÜ */
-.sidebar {
-  width: 230px;
-  background: #ffffff;
-  border-radius: 8px;
   padding: 15px;
-  margin-right: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  font-size: 20px;
 }
 
-.sidebar button {
-  width: 100%;
-  padding: 14px;
-  margin-bottom: 12px;
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+}
+
+.menu button {
+  padding: 10px 15px;
+  margin-right: 10px;
   border: none;
   background: #0b5ed7;
   color: white;
-  border-radius: 6px;
   cursor: pointer;
-  font-size: 15px;
+  border-radius: 5px;
 }
 
-.sidebar button:hover {
+.menu button:hover {
   background: #094db1;
-}
-
-.sidebar a {
-  display: block;
-  margin-top: 20px;
-  text-align: center;
-  text-decoration: none;
-  color: #0b5ed7;
-  font-weight: bold;
-}
-
-/* İÇERİK */
-.content {
-  flex: 1;
 }
 
 .card {
   background: white;
-  border-radius: 8px;
-  padding: 25px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-
-.card h2 {
-  margin-top: 0;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-}
-
-label {
-  display: block;
-  font-weight: 600;
-  margin-top: 12px;
-}
-
-input, select {
-  width: 300px;
-  padding: 8px;
-  margin-top: 5px;
-}
-
-button.submit {
-  margin-top: 15px;
-  padding: 10px 20px;
-  background: #0b5ed7;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button.submit:hover {
-  background: #094db1;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 6px;
 }
 
 .hidden {
   display: none;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background: #eee;
 }
 </style>
 </head>
@@ -118,158 +71,101 @@ button.submit:hover {
   Van Özel Diyaliz Merkezi – Admin Paneli
 </header>
 
-<div class="layout">
+<div class="container">
 
-  <!-- SOL MENÜ -->
-  <aside class="sidebar">
-    <button onclick="show('hasta')">🩺 Hasta Ekle</button>
-    <button onclick="show('hemsire')">👩‍⚕️ Hemşire Ekle</button>
-    <button onclick="show('liste')">📋 Hemşire Listesi</button>
-    <button onclick="show('dagitim')">🔄 Haftalık Dağıtım</button>
-    <button onclick="show('hastaListe')">📋 Hasta Listesi</button>
-
+  <div class="menu">
+    <button onclick="show('hastaEkle')">Hasta Ekle</button>
+    <button onclick="show('hastaListe'); yukleHastalar()">Hasta Listesi</button>
+    <button onclick="show('hemsireEkle')">Hemşire Ekle</button>
     <a href="/logout">Çıkış</a>
-  </aside>
-
-  <!-- SAĞ İÇERİK -->
-  <main class="content">
+  </div>
 
   <!-- HASTA EKLE -->
-<section id="hasta" class="card">
-  <h2>Hasta Ekle</h2>
+  <div id="hastaEkle" class="card">
+    <h3>Hasta Ekle</h3>
+    <form method="POST" action="/admin/hasta-ekle">
+      <input name="ad" placeholder="Hasta Adı" required><br><br>
 
-  <form method="POST" action="/admin/hasta-ekle">
-    <label>Hasta Adı</label>
-    <input type="text" name="ad" required>
+      <select name="cihaz" required>
+        <option value="">Cihaz</option>
+        <script>
+          for (let i = 1; i <= 43; i++) {
+            document.write(`<option value="${i}">${i}</option>`);
+          }
+        </script>
+      </select><br><br>
 
-    <label>Cihaz</label>
-    <select name="cihaz" required>
-      <script>
-        for (let i = 1; i <= 43; i++) {
-          document.write(`<option value="${i}">${i}</option>`);
-        }
-      </script>
-    </select>
+      <select name="gunGrubu" required>
+        <option value="">Gün Grubu</option>
+        <option value="Pzt-Çrş-Cum">Pzt-Çrş-Cum</option>
+        <option value="Sal-Per-Cts">Sal-Per-Cts</option>
+      </select><br><br>
 
-    <label>Gün Grubu</label>
-    <select name="gunGrubu" required>
-      <option value="Pzt-Çrş-Cum">Pzt-Çrş-Cum</option>
-      <option value="Sal-Per-Cts">Sal-Per-Cts</option>
-    </select>
+      <select name="seans" required>
+        <option value="">Seans</option>
+        <option value="Sabah">Sabah</option>
+        <option value="Öğle">Öğle</option>
+        <option value="Akşam">Akşam</option>
+      </select><br><br>
 
-    <label>Seans</label>
-    <select name="seans" required>
-      <option value="Sabah">Sabah</option>
-      <option value="Öğle">Öğle</option>
-      <option value="Akşam">Akşam</option>
-    </select>
+      <button>Kaydet</button>
+    </form>
+  </div>
 
-    <button class="submit">Hasta Kaydet</button>
-  </form>
-</section>
+  <!-- HASTA LİSTESİ -->
+  <div id="hastaListe" class="card hidden">
+    <h3>Hasta Listesi</h3>
 
+    <table>
+      <thead>
+        <tr>
+          <th>Ad</th>
+          <th>Cihaz</th>
+          <th>Gün</th>
+          <th>Seans</th>
+        </tr>
+      </thead>
+      <tbody id="hastaTablo"></tbody>
+    </table>
+  </div>
 
-    <!-- HEMŞİRE EKLE -->
-    <section id="hemsire" class="card hidden">
-      <h2>Hemşire Ekle</h2>
+  <!-- HEMŞİRE EKLE -->
+  <div id="hemsireEkle" class="card hidden">
+    <h3>Hemşire Ekle</h3>
+    <form method="POST" action="/admin/hemsire-ekle">
+      <input name="adSoyad" placeholder="Ad Soyad" required><br><br>
+      <input name="tc" placeholder="TC" required><br><br>
+      <button>Ekle</button>
+    </form>
+  </div>
 
-      <form method="POST" action="/admin/hemsire-ekle">
-        <label>Ad Soyad</label>
-        <input name="adSoyad" required>
-
-        <label>TC Kimlik No</label>
-        <input name="tc" maxlength="11" required>
-
-        <button class="submit">Hemşire Ekle</button>
-      </form>
-    </section>
-
-    <!-- HEMŞİRE LİSTESİ -->
-    <section id="liste" class="card hidden">
-      <h2>Hemşire Listesi</h2>
-      <ul id="hemsireListesi"></ul>
-    </section>
-
-    <!-- DAĞITIM -->
-    <section id="dagitim" class="card hidden">
-      <h2>Haftalık Dağıtımı Çalıştır</h2>
-
-      <form method="POST" action="/admin/dagitim-calistir">
-        <label>Hafta Kodu</label>
-        <input name="hafta" value="2026-01-HAFTA-1" required>
-        <button class="submit">Dağıtımı Başlat</button>
-      </form>
-    </section>
-
-  </main>
 </div>
 
 <script>
 function show(id) {
-  document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
+  document.querySelectorAll(".card").forEach(c => c.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
 }
 
-// Hemşire listesini getir
-fetch("/admin/hemsireler")
-  .then(res => res.json())
-  .then(data => {
-    const ul = document.getElementById("hemsireListesi");
-    ul.innerHTML = "";
-    data.forEach(h => {
-      ul.innerHTML += `<li>${h.adSoyad} (${h.tc})</li>`;
-    });
-  });
-
-  <script>
 function yukleHastalar() {
   fetch("/admin/hastalar")
     .then(res => res.json())
     .then(data => {
-      const tbody = document.getElementById("hastaTable");
-     жаў
-      tbody.innerHTML = "";
-
+      const tablo = document.getElementById("hastaTablo");
+      tablo.innerHTML = "";
       data.forEach(h => {
-        tbody.innerHTML += `
+        tablo.innerHTML += `
           <tr>
             <td>${h.ad}</td>
             <td>${h.cihaz}</td>
             <td>${h.gunGrubu}</td>
             <td>${h.seans}</td>
-            <td>${h.aktif ? "🟢 Aktif" : "🔴 Pasif"}</td>
           </tr>
         `;
       });
     });
 }
-
-// Hasta listesi açılınca otomatik yükle
-document.addEventListener("click", e => {
-  if (e.target.innerText.includes("Hasta Listesi")) {
-    yukleHastalar();
-  }
-});
-</script>
-
 </script>
 
 </body>
 </html>
-<!-- HASTA LİSTESİ -->
-<section id="hastaListe" class="card hidden">
-  <h2>Hasta Listesi</h2>
-
-  <table style="width:100%; border-collapse: collapse;">
-    <thead>
-      <tr>
-        <th>Ad</th>
-        <th>Cihaz</th>
-        <th>Gün</th>
-        <th>Seans</th>
-        <th>Durum</th>
-      </tr>
-    </thead>
-    <tbody id="hastaTable"></tbody>
-  </table>
-</section>
