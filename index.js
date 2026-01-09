@@ -66,13 +66,40 @@ app.get("/hemsire", requireHemsire, (req, res) => {
   res.sendFile(path.join(__dirname, "views/hemsire.html"));
 });
 
-// ===== HEMŞİRE EKLE (TEST AMAÇLI) =====
-app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
-  console.log("🟢 HEMŞİRE EKLE POST GELDİ");
-  console.log(req.body);
+const fs = require("fs");
 
-  res.send("✅ Hemşire ekleme route çalışıyor");
+// ===== HEMŞİRE EKLE (GERÇEK) =====
+app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
+  const { adSoyad, tc } = req.body;
+
+  if (!adSoyad || !tc) {
+    return res.send("Eksik bilgi");
+  }
+
+  const dosyaYolu = path.join(__dirname, "data", "hemsireler.json");
+
+  let hemsireler = [];
+  if (fs.existsSync(dosyaYolu)) {
+    hemsireler = JSON.parse(fs.readFileSync(dosyaYolu));
+  }
+
+  // TC mükerrer kontrol
+  if (hemsireler.find(h => h.tc === tc)) {
+    return res.send("Bu TC ile kayıtlı hemşire var");
+  }
+
+  hemsireler.push({
+    id: Date.now(),
+    adSoyad,
+    tc,
+    aktif: true
+  });
+
+  fs.writeFileSync(dosyaYolu, JSON.stringify(hemsireler, null, 2));
+
+  res.redirect("/admin");
 });
+
 
 
 // ===== HEMŞİRE EKLE =====
