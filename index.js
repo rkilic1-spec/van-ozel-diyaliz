@@ -44,53 +44,13 @@ app.get("/admin", requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, "views/admin.html"));
 });
 
-// ===== HEMŞİRE EKLE (TEK VE TEMİZ) =====
+// ===== HEMŞİRE EKLE =====
 app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
   const { adSoyad, tc } = req.body;
   if (!adSoyad || !tc) return res.send("Eksik bilgi");
 
   const dosyaYolu = path.join(__dirname, "data", "hemsireler.json");
-
-  // ===== HASTA EKLE =====
-app.post("/admin/hasta-ekle", requireAdmin, (req, res) => {
-  const { ad, cihaz, gunGrubu, seans } = req.body;
-
-  if (!ad || !cihaz || !gunGrubu || !seans) {
-    return res.status(400).send("Eksik hasta bilgisi");
-  }
-
-  const dosyaYolu = path.join(__dirname, "data", "hastalar.json");
-
-  let hastalar = [];
-  if (fs.existsSync(dosyaYolu)) {
-    hastalar = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
-  }
-
-  // Aynı cihaz + aynı seans doluluk kontrolü
-  if (hastalar.find(h => h.cihaz == cihaz && h.seans === seans)) {
-    return res.send("Bu cihaz ve seans dolu");
-  }
-
-  hastalar.push({
-    id: Date.now(),
-    ad,
-    cihaz: Number(cihaz),
-    gunGrubu,
-    seans,
-    aktif: true
-  });
-
-  fs.writeFileSync(dosyaYolu, JSON.stringify(hastalar, null, 2));
-
-  console.log("✅ Hasta eklendi:", ad);
-  res.redirect("/admin");
-});
-
-  // 🔥 DOSYA YOKSA OLUŞTUR
-  if (!fs.existsSync(dosyaYolu)) {
-    fs.mkdirSync(path.join(__dirname, "data"), { recursive: true });
-    fs.writeFileSync(dosyaYolu, "[]");
-  }
+  if (!fs.existsSync(dosyaYolu)) fs.writeFileSync(dosyaYolu, "[]");
 
   const hemsireler = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
 
@@ -109,36 +69,48 @@ app.post("/admin/hasta-ekle", requireAdmin, (req, res) => {
   res.redirect("/admin");
 });
 
+// ===== HASTA EKLE =====
+app.post("/admin/hasta-ekle", requireAdmin, (req, res) => {
+  const { ad, cihaz, gunGrubu, seans } = req.body;
 
-// ===== HEMŞİRE LİSTESİ (TEST İÇİN) =====
-app.get("/admin/hemsireler", requireAdmin, (req, res) => {
-  const dosyaYolu = path.join(__dirname, "data", "hemsireler.json");
-  const hemsireler = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
-  res.json(hemsireler);
-});
-// ===== HASTA LİSTESİ (ADMIN) =====
-app.get("/admin/hastalar", requireAdmin, (req, res) => {
-  const dosyaYolu = path.join(__dirname, "data", "hastalar.json");
-
-  let hastalar = [];
-  if (fs.existsSync(dosyaYolu)) {
-    hastalar = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
+  if (!ad || !cihaz || !gunGrubu || !seans) {
+    return res.send("Eksik hasta bilgisi");
   }
 
-  res.json(hastalar);
-});
-const fs = require("fs");
-
-// ===== HASTA LİSTESİ (ADMIN) =====
-app.get("/admin/hastalar", requireAdmin, (req, res) => {
   const dosyaYolu = path.join(__dirname, "data", "hastalar.json");
-
-  if (!fs.existsSync(dosyaYolu)) {
-    return res.json([]);
-  }
+  if (!fs.existsSync(dosyaYolu)) fs.writeFileSync(dosyaYolu, "[]");
 
   const hastalar = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
-  res.json(hastalar);
+
+  if (hastalar.find(h => h.cihaz == cihaz && h.seans === seans)) {
+    return res.send("Bu cihaz ve seans dolu");
+  }
+
+  hastalar.push({
+    id: Date.now(),
+    ad,
+    cihaz: Number(cihaz),
+    gunGrubu,
+    seans,
+    aktif: true
+  });
+
+  fs.writeFileSync(dosyaYolu, JSON.stringify(hastalar, null, 2));
+  res.redirect("/admin");
+});
+
+// ===== HEMŞİRE LİSTESİ =====
+app.get("/admin/hemsireler", requireAdmin, (req, res) => {
+  const dosyaYolu = path.join(__dirname, "data", "hemsireler.json");
+  if (!fs.existsSync(dosyaYolu)) return res.json([]);
+  res.json(JSON.parse(fs.readFileSync(dosyaYolu, "utf8")));
+});
+
+// ===== HASTA LİSTESİ =====
+app.get("/admin/hastalar", requireAdmin, (req, res) => {
+  const dosyaYolu = path.join(__dirname, "data", "hastalar.json");
+  if (!fs.existsSync(dosyaYolu)) return res.json([]);
+  res.json(JSON.parse(fs.readFileSync(dosyaYolu, "utf8")));
 });
 
 // ===== LOGOUT =====
