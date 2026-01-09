@@ -24,22 +24,11 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-function requireHemsire(req, res, next) {
-  if (!req.session.user || req.session.user.role !== "hemsire") {
-    return res.redirect("/login/hemsire");
-  }
-  next();
-}
-
 // ===== LOGIN =====
 app.get("/", (req, res) => res.redirect("/login/admin"));
 
 app.get("/login/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "views/admin-login.html"));
-});
-
-app.get("/login/hemsire", (req, res) => {
-  res.sendFile(path.join(__dirname, "views/hemsire-login.html"));
 });
 
 app.post("/login/admin", (req, res) => {
@@ -50,40 +39,22 @@ app.post("/login/admin", (req, res) => {
   res.send("Hatalı admin girişi");
 });
 
-app.post("/login/hemsire", (req, res) => {
-  if (req.body.username === "hemsire" && req.body.password === "1234") {
-    req.session.user = { role: "hemsire" };
-    return res.redirect("/hemsire");
-  }
-  res.send("Hatalı hemşire girişi");
-});
-
-// ===== PANELLER =====
+// ===== ADMIN PANEL =====
 app.get("/admin", requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, "views/admin.html"));
 });
 
-app.get("/hemsire", requireHemsire, (req, res) => {
-  res.sendFile(path.join(__dirname, "views/hemsire.html"));
-});
-
-// ===== HEMŞİRE EKLE (TEK VE GERÇEK ROUTE) =====
+// ===== HEMŞİRE EKLE (TEK VE TEMİZ) =====
 app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
   const { adSoyad, tc } = req.body;
-
-  if (!adSoyad || !tc) {
-    return res.send("Eksik bilgi");
-  }
+  if (!adSoyad || !tc) return res.send("Eksik bilgi");
 
   const dosyaYolu = path.join(__dirname, "data", "hemsireler.json");
 
-  let hemsireler = [];
-  if (fs.existsSync(dosyaYolu)) {
-    hemsireler = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
-  }
+  const hemsireler = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
 
   if (hemsireler.find(h => h.tc === tc)) {
-    return res.send("Bu TC ile kayıtlı hemşire var");
+    return res.send("Bu TC ile hemşire zaten kayıtlı");
   }
 
   hemsireler.push({
@@ -94,9 +65,16 @@ app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
   });
 
   fs.writeFileSync(dosyaYolu, JSON.stringify(hemsireler, null, 2));
-
   console.log("✅ Hemşire eklendi:", adSoyad);
+
   res.redirect("/admin");
+});
+
+// ===== HEMŞİRE LİSTESİ (TEST İÇİN) =====
+app.get("/admin/hemsireler", requireAdmin, (req, res) => {
+  const dosyaYolu = path.join(__dirname, "data", "hemsireler.json");
+  const hemsireler = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
+  res.json(hemsireler);
 });
 
 // ===== LOGOUT =====
