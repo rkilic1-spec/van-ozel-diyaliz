@@ -51,10 +51,16 @@ app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
 
   const dosyaYolu = path.join(__dirname, "data", "hemsireler.json");
 
+  // 🔥 DOSYA YOKSA OLUŞTUR
+  if (!fs.existsSync(dosyaYolu)) {
+    fs.mkdirSync(path.join(__dirname, "data"), { recursive: true });
+    fs.writeFileSync(dosyaYolu, "[]");
+  }
+
   const hemsireler = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
 
   if (hemsireler.find(h => h.tc === tc)) {
-    return res.send("Bu TC ile hemşire zaten kayıtlı");
+    return res.send("Bu TC ile hemşire zaten var");
   }
 
   hemsireler.push({
@@ -65,10 +71,9 @@ app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
   });
 
   fs.writeFileSync(dosyaYolu, JSON.stringify(hemsireler, null, 2));
-  console.log("✅ Hemşire eklendi:", adSoyad);
-
   res.redirect("/admin");
 });
+
 
 // ===== HEMŞİRE LİSTESİ (TEST İÇİN) =====
 app.get("/admin/hemsireler", requireAdmin, (req, res) => {
