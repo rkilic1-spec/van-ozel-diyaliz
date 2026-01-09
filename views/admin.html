@@ -220,6 +220,38 @@ fetch("/admin/hemsireler")
       ul.innerHTML += `<li>${h.adSoyad} (${h.tc})</li>`;
     });
   });
+
+  <script>
+function yukleHastalar() {
+  fetch("/admin/hastalar")
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById("hastaTable");
+     жаў
+      tbody.innerHTML = "";
+
+      data.forEach(h => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${h.ad}</td>
+            <td>${h.cihaz}</td>
+            <td>${h.gunGrubu}</td>
+            <td>${h.seans}</td>
+            <td>${h.aktif ? "🟢 Aktif" : "🔴 Pasif"}</td>
+          </tr>
+        `;
+      });
+    });
+}
+
+// Hasta listesi açılınca otomatik yükle
+document.addEventListener("click", e => {
+  if (e.target.innerText.includes("Hasta Listesi")) {
+    yukleHastalar();
+  }
+});
+</script>
+
 </script>
 
 </body>
