@@ -66,6 +66,15 @@ app.get("/hemsire", requireHemsire, (req, res) => {
   res.sendFile(path.join(__dirname, "views/hemsire.html"));
 });
 
+// ===== HEMŞİRE EKLE (TEST AMAÇLI) =====
+app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
+  console.log("🟢 HEMŞİRE EKLE POST GELDİ");
+  console.log(req.body);
+
+  res.send("✅ Hemşire ekleme route çalışıyor");
+});
+
+
 // ===== HEMŞİRE EKLE =====
 const fs = require("fs");
 
