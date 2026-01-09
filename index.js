@@ -88,6 +88,44 @@ app.get("/admin/hemsireler", requireAdmin, (req, res) => {
   res.json(hemsireler);
 });
 
+// ===== HEMŞİREYE CİHAZ TANIMLA =====
+app.post("/admin/hemsire-cihaz", requireAdmin, (req, res) => {
+  const { hemsireId, cihazlar } = req.body;
+
+  const dosyaYolu = path.join(__dirname, "data", "hemsireler.json");
+  let hemsireler = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
+
+  hemsireler = hemsireler.map(h =>
+    h.id == hemsireId
+      ? { ...h, cihazlar: cihazlar.map(Number) }
+      : h
+  );
+
+  fs.writeFileSync(dosyaYolu, JSON.stringify(hemsireler, null, 2));
+  res.redirect("/admin");
+});
+// ===== HEMŞİREYE AİT HASTALAR =====
+app.get("/hemsire/hastalar", requireHemsire, (req, res) => {
+  const hemsireId = req.session.user.hemsireId;
+
+  const hemsireler = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "data", "hemsireler.json"), "utf8")
+  );
+
+  const hastalar = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "data", "hastalar.json"), "utf8")
+  );
+
+  const hemsire = hemsireler.find(h => h.id == hemsireId);
+  if (!hemsire || !hemsire.cihazlar) return res.json([]);
+
+  const liste = hastalar.filter(
+    h => h.aktif && hemsire.cihazlar.includes(h.cihaz)
+  );
+
+  res.json(liste);
+});
+
 /* ================== HASTA EKLE ================== */
 app.post("/admin/hasta-ekle", requireAdmin, (req, res) => {
   const { ad, cihaz, gunGrubu, seans } = req.body;
