@@ -23,7 +23,7 @@ header {
   margin: 20px auto;
 }
 
-.menu button {
+.menu button, .menu a {
   padding: 10px 15px;
   margin-right: 10px;
   border: none;
@@ -31,9 +31,10 @@ header {
   color: white;
   cursor: pointer;
   border-radius: 5px;
+  text-decoration: none;
 }
 
-.menu button:hover {
+.menu button:hover, .menu a:hover {
   background: #094db1;
 }
 
@@ -83,6 +84,7 @@ th {
   <!-- HASTA EKLE -->
   <div id="hastaEkle" class="card">
     <h3>Hasta Ekle</h3>
+
     <form method="POST" action="/admin/hasta-ekle">
       <input name="ad" placeholder="Hasta Adı" required><br><br>
 
@@ -108,7 +110,7 @@ th {
         <option value="Akşam">Akşam</option>
       </select><br><br>
 
-      <button>Kaydet</button>
+      <button type="submit">Kaydet</button>
     </form>
   </div>
 
@@ -121,7 +123,7 @@ th {
         <tr>
           <th>Ad</th>
           <th>Cihaz</th>
-          <th>Gün</th>
+          <th>Gün Grubu</th>
           <th>Seans</th>
         </tr>
       </thead>
@@ -132,10 +134,11 @@ th {
   <!-- HEMŞİRE EKLE -->
   <div id="hemsireEkle" class="card hidden">
     <h3>Hemşire Ekle</h3>
+
     <form method="POST" action="/admin/hemsire-ekle">
       <input name="adSoyad" placeholder="Ad Soyad" required><br><br>
-      <input name="tc" placeholder="TC" required><br><br>
-      <button>Ekle</button>
+      <input name="tc" placeholder="TC Kimlik No" required><br><br>
+      <button type="submit">Ekle</button>
     </form>
   </div>
 
