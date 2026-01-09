@@ -116,6 +116,17 @@ app.get("/admin/hemsireler", requireAdmin, (req, res) => {
   const hemsireler = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
   res.json(hemsireler);
 });
+// ===== HASTA LİSTESİ (ADMIN) =====
+app.get("/admin/hastalar", requireAdmin, (req, res) => {
+  const dosyaYolu = path.join(__dirname, "data", "hastalar.json");
+
+  let hastalar = [];
+  if (fs.existsSync(dosyaYolu)) {
+    hastalar = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
+  }
+
+  res.json(hastalar);
+});
 
 // ===== LOGOUT =====
 app.get("/logout", (req, res) => {
