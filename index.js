@@ -1,6 +1,7 @@
 const express = require("express");
 const session = require("express-session");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -66,9 +67,7 @@ app.get("/hemsire", requireHemsire, (req, res) => {
   res.sendFile(path.join(__dirname, "views/hemsire.html"));
 });
 
-const fs = require("fs");
-
-// ===== HEMŞİRE EKLE (GERÇEK) =====
+// ===== HEMŞİRE EKLE (TEK VE GERÇEK ROUTE) =====
 app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
   const { adSoyad, tc } = req.body;
 
@@ -80,48 +79,11 @@ app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
 
   let hemsireler = [];
   if (fs.existsSync(dosyaYolu)) {
-    hemsireler = JSON.parse(fs.readFileSync(dosyaYolu));
-  }
-
-  // TC mükerrer kontrol
-  if (hemsireler.find(h => h.tc === tc)) {
-    return res.send("Bu TC ile kayıtlı hemşire var");
-  }
-
-  hemsireler.push({
-    id: Date.now(),
-    adSoyad,
-    tc,
-    aktif: true
-  });
-
-  fs.writeFileSync(dosyaYolu, JSON.stringify(hemsireler, null, 2));
-
-  res.redirect("/admin");
-});
-
-
-
-// ===== HEMŞİRE EKLE =====
-const fs = require("fs");
-
-app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
-  const { adSoyad, tc } = req.body;
-
-  if (!adSoyad || !tc) {
-    return res.status(400).send("Eksik bilgi");
-  }
-
-  const dosyaYolu = path.join(__dirname, "data", "hemsireler.json");
-
-  let hemsireler = [];
-  if (fs.existsSync(dosyaYolu)) {
     hemsireler = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
   }
 
-  // Aynı TC kontrolü
   if (hemsireler.find(h => h.tc === tc)) {
-    return res.send("Bu TC ile hemşire zaten kayıtlı");
+    return res.send("Bu TC ile kayıtlı hemşire var");
   }
 
   hemsireler.push({
@@ -144,5 +106,5 @@ app.get("/logout", (req, res) => {
 
 // ===== SERVER =====
 app.listen(PORT, "0.0.0.0", () => {
-  console.log("Server aktif:", PORT);
+  console.log("🚀 Server aktif:", PORT);
 });
