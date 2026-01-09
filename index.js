@@ -33,11 +33,21 @@ const HASTA_FILE = path.join(DATA_DIR, "hastalar.json");
 ensureFile(HEMSIRE_FILE);
 ensureFile(HASTA_FILE);
 
-/* ================== AUTH ================== */
+// ===== YETKİ =====
 function requireAdmin(req, res, next) {
-  if (!req.session.user) return res.redirect("/login/admin");
+  if (!req.session.user || req.session.user.role !== "admin") {
+    return res.redirect("/login/admin");
+  }
   next();
 }
+
+function requireHemsire(req, res, next) {
+  if (!req.session.user || req.session.user.role !== "hemsire") {
+    return res.redirect("/login/hemsire");
+  }
+  next();
+}
+
 
 /* ================== LOGIN ================== */
 app.get("/", (req, res) => res.redirect("/login/admin"));
