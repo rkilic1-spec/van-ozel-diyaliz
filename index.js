@@ -115,6 +115,22 @@ app.post("/admin/hasta-ekle", requireAdmin, (req, res) => {
   res.redirect("/admin");
 });
 
+// ===== HASTA PASİF YAP =====
+app.post("/admin/hasta-pasif", requireAdmin, (req, res) => {
+  const { id } = req.body;
+  const dosyaYolu = path.join(__dirname, "data", "hastalar.json");
+
+  let hastalar = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
+
+  hastalar = hastalar.map(h =>
+    h.id == id ? { ...h, aktif: false } : h
+  );
+
+  fs.writeFileSync(dosyaYolu, JSON.stringify(hastalar, null, 2));
+  res.redirect("/admin");
+});
+
+
 /* ================== HASTA LİSTESİ ================== */
 app.get("/admin/hastalar", requireAdmin, (req, res) => {
   const hastalar = JSON.parse(fs.readFileSync(HASTA_FILE, "utf8"));
