@@ -121,10 +121,12 @@ th {
     <table>
       <thead>
         <tr>
-          <th>Ad</th>
-          <th>Cihaz</th>
-          <th>Gün Grubu</th>
-          <th>Seans</th>
+<th>Ad</th>
+<th>Cihaz</th>
+<th>Gün</th>
+<th>Seans</th>
+<th>İşlem</th>
+
         </tr>
       </thead>
       <tbody id="hastaTablo"></tbody>
@@ -156,19 +158,31 @@ function yukleHastalar() {
     .then(data => {
       const tablo = document.getElementById("hastaTablo");
       tablo.innerHTML = "";
+
       data.forEach(h => {
         tablo.innerHTML += `
-          <tr>
+          <tr style="${h.aktif ? "" : "opacity:0.5; text-decoration:line-through"}">
             <td>${h.ad}</td>
             <td>${h.cihaz}</td>
             <td>${h.gunGrubu}</td>
             <td>${h.seans}</td>
+            <td>
+              ${
+                h.aktif
+                  ? `<form method="POST" action="/admin/hasta-pasif" style="display:inline">
+                       <input type="hidden" name="id" value="${h.id}">
+                       <button>Pasif Yap</button>
+                     </form>`
+                  : "Pasif"
+              }
+            </td>
           </tr>
         `;
       });
     });
 }
 </script>
+
 
 </body>
 </html>
