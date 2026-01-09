@@ -132,60 +132,40 @@ button.submit:hover {
   <!-- SAĞ İÇERİK -->
   <main class="content">
 
-    <!-- HASTA EKLE -->
-    <section id="hasta" class="card">
-      <h2>Hasta Ekle</h2>
+  <!-- HASTA EKLE -->
+<section id="hasta" class="card">
+  <h2>Hasta Ekle</h2>
 
-      <form method="POST" action="/admin/hasta-ekle">
-        <label>Hasta Adı</label>
-        <input name="ad" required>
+  <form method="POST" action="/admin/hasta-ekle">
+    <label>Hasta Adı</label>
+    <input type="text" name="ad" required>
 
-        <label>Cihaz</label>
-        <select name="cihaz" required>
-          <script>
-            for (let i = 1; i <= 43; i++) {
-              document.write(`<option value="${i}">${i}</option>`);
-            }
-          </script>
-        </select>
+    <label>Cihaz</label>
+    <select name="cihaz" required>
+      <script>
+        for (let i = 1; i <= 43; i++) {
+          document.write(`<option value="${i}">${i}</option>`);
+        }
+      </script>
+    </select>
 
-        <label>Seans</label>
-        <select name="seans" required>
-          <option>Sabah</option>
-          <option>Öğle</option>
-        </select>
+    <label>Gün Grubu</label>
+    <select name="gunGrubu" required>
+      <option value="Pzt-Çrş-Cum">Pzt-Çrş-Cum</option>
+      <option value="Sal-Per-Cts">Sal-Per-Cts</option>
+    </select>
 
-        <button class="submit">Hasta Kaydet</button>
-      </form>
-    </section>
-<form method="POST" action="/admin/hasta-ekle">
-  <label>Hasta Adı</label>
-  <input type="text" name="ad" required>
+    <label>Seans</label>
+    <select name="seans" required>
+      <option value="Sabah">Sabah</option>
+      <option value="Öğle">Öğle</option>
+      <option value="Akşam">Akşam</option>
+    </select>
 
-  <label>Cihaz</label>
-  <select name="cihaz" required>
-    <script>
-      for (let i = 1; i <= 43; i++) {
-        document.write(`<option value="${i}">${i}</option>`);
-      }
-    </script>
-  </select>
+    <button class="submit">Hasta Kaydet</button>
+  </form>
+</section>
 
-  <label>Gün Grubu</label>
-  <select name="gunGrubu" required>
-    <option value="Pzt-Çrş-Cum">Pzt-Çrş-Cum</option>
-    <option value="Sal-Per-Cts">Sal-Per-Cts</option>
-  </select>
-
-  <label>Seans</label>
-  <select name="seans" required>
-    <option value="Sabah">Sabah</option>
-    <option value="Öğle">Öğle</option>
-    <option value="Akşam">Akşam</option>
-  </select>
-
-  <button class="submit">Hasta Kaydet</button>
-</form>
 
     <!-- HEMŞİRE EKLE -->
     <section id="hemsire" class="card hidden">
