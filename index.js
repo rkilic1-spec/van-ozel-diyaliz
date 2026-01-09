@@ -66,6 +66,41 @@ app.get("/hemsire", requireHemsire, (req, res) => {
   res.sendFile(path.join(__dirname, "views/hemsire.html"));
 });
 
+// ===== HEMŞİRE EKLE =====
+const fs = require("fs");
+
+app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
+  const { adSoyad, tc } = req.body;
+
+  if (!adSoyad || !tc) {
+    return res.status(400).send("Eksik bilgi");
+  }
+
+  const dosyaYolu = path.join(__dirname, "data", "hemsireler.json");
+
+  let hemsireler = [];
+  if (fs.existsSync(dosyaYolu)) {
+    hemsireler = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
+  }
+
+  // Aynı TC kontrolü
+  if (hemsireler.find(h => h.tc === tc)) {
+    return res.send("Bu TC ile hemşire zaten kayıtlı");
+  }
+
+  hemsireler.push({
+    id: Date.now(),
+    adSoyad,
+    tc,
+    aktif: true
+  });
+
+  fs.writeFileSync(dosyaYolu, JSON.stringify(hemsireler, null, 2));
+
+  console.log("✅ Hemşire eklendi:", adSoyad);
+  res.redirect("/admin");
+});
+
 // ===== LOGOUT =====
 app.get("/logout", (req, res) => {
   req.session.destroy(() => res.redirect("/"));
