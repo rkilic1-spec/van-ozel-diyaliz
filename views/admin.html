@@ -158,6 +158,34 @@ button.submit:hover {
         <button class="submit">Hasta Kaydet</button>
       </form>
     </section>
+<form method="POST" action="/admin/hasta-ekle">
+  <label>Hasta Adı</label>
+  <input type="text" name="ad" required>
+
+  <label>Cihaz</label>
+  <select name="cihaz" required>
+    <script>
+      for (let i = 1; i <= 43; i++) {
+        document.write(`<option value="${i}">${i}</option>`);
+      }
+    </script>
+  </select>
+
+  <label>Gün Grubu</label>
+  <select name="gunGrubu" required>
+    <option value="Pzt-Çrş-Cum">Pzt-Çrş-Cum</option>
+    <option value="Sal-Per-Cts">Sal-Per-Cts</option>
+  </select>
+
+  <label>Seans</label>
+  <select name="seans" required>
+    <option value="Sabah">Sabah</option>
+    <option value="Öğle">Öğle</option>
+    <option value="Akşam">Akşam</option>
+  </select>
+
+  <button class="submit">Hasta Kaydet</button>
+</form>
 
     <!-- HEMŞİRE EKLE -->
     <section id="hemsire" class="card hidden">
