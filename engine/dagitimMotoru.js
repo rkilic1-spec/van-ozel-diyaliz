@@ -33,14 +33,21 @@ function haftalikDagitimYap(haftaKodu) {
   for (const gun of GUNLER) {
     for (const seans of SEANSLAR) {
 
-      const seansHastalari = hastalar.filter(h =>
-        h.aktif &&
-        h.seans === seans &&
-        (
-          (["Pzt","Çar","Cum"].includes(gun) && h.gunGrubu === "Pzt-Çrş-Cum") ||
-          (["Sal","Per","Cts"].includes(gun) && h.gunGrubu === "Sal-Per-Cts")
-        )
-      );
+const seansHastalari = hastalar.filter(h => {
+  if (!h.aktif) return false;
+  if (h.seans !== seans) return false;
+
+  if (h.gunGrubu === "Pzt-Çrş-Cum") {
+    return ["Pzt", "Çar", "Cum"].includes(gun);
+  }
+
+  if (h.gunGrubu === "Sal-Per-Cts") {
+    return ["Sal", "Per", "Cts"].includes(gun);
+  }
+
+  return false;
+});
+
 
       for (const hasta of seansHastalari) {
         const uygun = hemsireler
