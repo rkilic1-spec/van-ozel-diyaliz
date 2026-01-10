@@ -114,6 +114,24 @@ app.post("/admin/hemsire-cihaz", requireAdmin, (req, res) => {
   fs.writeFileSync(dosyaYolu, JSON.stringify(hemsireler, null, 2));
   res.redirect("/admin");
 });
+// ===== HAFTALIK İZİN KAYDET =====
+app.post("/admin/izin-kaydet", requireAdmin, (req, res) => {
+  const { hafta, izin } = req.body;
+
+  const dosyaYolu = path.join(__dirname, "data", "izinler.json");
+
+  let izinler = {};
+  if (fs.existsSync(dosyaYolu)) {
+    izinler = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
+  }
+
+  izinler[hafta] = izin || {};
+
+  fs.writeFileSync(dosyaYolu, JSON.stringify(izinler, null, 2));
+  res.redirect("/admin");
+});
+
+
 // ===== HEMŞİREYE AİT HASTALAR =====
 app.get("/hemsire/hastalar", requireHemsire, (req, res) => {
   const hemsireId = req.session.user.hemsireId;
