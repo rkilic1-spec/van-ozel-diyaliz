@@ -70,6 +70,36 @@ app.get("/admin", requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, "views/admin.html"));
 });
 
+app.get("/admin/cizelge", requireAdmin, (req,res)=>{
+  res.sendFile(path.join(__dirname,"views/admin-cizelge.html"));
+});
+
+app.post("/admin/izinler-kaydet", requireAdmin, (req,res)=>{
+  const { hafta, ...veriler } = req.body;
+
+  const dosya = path.join(__dirname,"data","izinler.json");
+  if(!fs.existsSync(path.dirname(dosya))){
+    fs.mkdirSync(path.dirname(dosya),{recursive:true});
+  }
+
+  let json = {};
+  if(fs.existsSync(dosya)){
+    json = JSON.parse(fs.readFileSync(dosya,"utf8"));
+  }
+
+  json[hafta] = {};
+
+  Object.keys(veriler).forEach(k=>{
+    const [id,gun,seans] = k.split("_");
+    if(!json[hafta][id]) json[hafta][id]=[];
+    json[hafta][id].push(`${gun}_${seans}`);
+  });
+
+  fs.writeFileSync(dosya, JSON.stringify(json,null,2));
+  res.send("✅ Haftalık çizelge kaydedildi");
+});
+
+
 /* ================== HEMŞİRE EKLE ================== */
 app.post("/admin/hemsire-ekle", requireAdmin, (req, res) => {
   const { adSoyad, tc } = req.body;
