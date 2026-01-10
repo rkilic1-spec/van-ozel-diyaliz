@@ -274,7 +274,3 @@ app.get("/logout", (req, res) => {
 app.listen(PORT, () => {
   console.log("🚀 Server çalışıyor:", PORT);
 });
-
-app.listen(PORT, () => {
-  console.log("🚀 Server çalışıyor:", PORT);
-});
