@@ -79,6 +79,13 @@ th {
     <button onclick="show('hastaListe'); yukleHastalar()">Hasta Listesi</button>
     <button onclick="show('hemsireEkle')">Hemşire Ekle</button>
     <button onclick="show('izin')">📅 Haftalık İzin</button>
+    <h3>Haftalık Dağıtım</h3>
+
+<form method="POST" action="/admin/dagitim-calistir">
+  <input name="hafta" value="2026-01-HAFTA-1" required>
+  <button type="submit">🔄 Dağıtımı Çalıştır</button>
+</form>
+
     <a href="/logout">Çıkış</a>
   </div>
 
