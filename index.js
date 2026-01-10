@@ -193,6 +193,20 @@ app.get("/admin/izinler", requireAdmin, (req, res) => {
   res.json(izinler);
 });
 
+// ===== HAFTALIK DAĞITIMI GETİR =====
+app.get("/admin/dagitim/:hafta", requireAdmin, (req, res) => {
+  const hafta = req.params.hafta;
+  const dosya = path.join(__dirname, "data", "dagitimlar.json");
+
+  if (!fs.existsSync(dosya)) {
+    return res.json([]);
+  }
+
+  const dagitimlar = JSON.parse(fs.readFileSync(dosya, "utf8"));
+
+  res.json(dagitimlar[hafta] || []);
+});
+
 
 // ===== HEMŞİREYE AİT HASTALAR =====
 app.get("/hemsire/hastalar", requireHemsire, (req, res) => {
