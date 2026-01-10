@@ -145,6 +145,26 @@ app.post("/admin/hemsire-cihaz", requireAdmin, (req, res) => {
   fs.writeFileSync(dosyaYolu, JSON.stringify(hemsireler, null, 2));
   res.redirect("/admin");
 });
+
+const { haftalikDagitimYap } = require("./engine/dagitimMotoru");
+
+app.post("/admin/dagitim-calistir", requireAdmin, (req, res) => {
+  const { hafta } = req.body;
+
+  if (!hafta) {
+    return res.status(400).send("Hafta bilgisi yok");
+  }
+
+  try {
+    haftalikDagitimYap(hafta);
+    res.send("✅ Dağıtım başarıyla çalıştırıldı");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("❌ Dağıtım hatası: " + err.message);
+  }
+});
+
+
 // ===== HAFTALIK İZİN KAYDET =====
 app.post("/admin/izin-kaydet", requireAdmin, (req, res) => {
   const { hafta, izin } = req.body;
