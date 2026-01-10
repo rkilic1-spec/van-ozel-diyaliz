@@ -131,6 +131,17 @@ app.post("/admin/izin-kaydet", requireAdmin, (req, res) => {
   res.redirect("/admin");
 });
 
+app.get("/admin/izinler", requireAdmin, (req, res) => {
+  const dosyaYolu = path.join(__dirname, "data", "izinler.json");
+
+  if (!fs.existsSync(dosyaYolu)) {
+    return res.json([]);
+  }
+
+  const izinler = JSON.parse(fs.readFileSync(dosyaYolu, "utf8"));
+  res.json(izinler);
+});
+
 
 // ===== HEMŞİREYE AİT HASTALAR =====
 app.get("/hemsire/hastalar", requireHemsire, (req, res) => {
