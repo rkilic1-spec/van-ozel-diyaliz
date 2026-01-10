@@ -253,3 +253,7 @@ app.get("/logout", (req, res) => {
 app.listen(PORT, () => {
   console.log("🚀 Server çalışıyor:", PORT);
 });
+
+
+const { haftalikDagitimYap } = require("./engine/dagitimMotoru");
+haftalikDagitimYap("2026-01-HAFTA-1");
