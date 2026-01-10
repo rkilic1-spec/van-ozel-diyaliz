@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Haftalık Çizelge</title>
+<style>
+body { font-family: Arial; background:#f2f4f7; }
+table { border-collapse: collapse; width:100%; background:#fff; }
+th, td { border:1px solid #ccc; padding:6px; text-align:center; }
+th { background:#0b5ed7; color:#fff; }
+button { padding:10px 15px; background:#0b5ed7; color:#fff; border:none; cursor:pointer; }
+</style>
+</head>
+
+<body>
+<h2>Haftalık Hemşire Çizelgesi</h2>
+
+<form method="POST" action="/admin/izinler-kaydet">
+<input type="hidden" name="hafta" value="2026-01-HAFTA-1">
+
+<table>
+<thead>
+<tr>
+<th>Hemşire</th>
+<th>Pzt S</th><th>Pzt Ö</th>
+<th>Sal S</th><th>Sal Ö</th>
+<th>Çar S</th><th>Çar Ö</th>
+<th>Per S</th><th>Per Ö</th>
+<th>Cum S</th><th>Cum Ö</th>
+<th>Cts S</th><th>Cts Ö</th>
+</tr>
+</thead>
+
+<tbody id="satirlar"></tbody>
+</table>
+
+<br>
+<button type="submit">Kaydet</button>
+</form>
+
+<script>
+fetch("/admin/hemsireler")
+.then(r=>r.json())
+.then(list=>{
+  const tb=document.getElementById("satirlar");
+  list.forEach(h=>{
+    tb.innerHTML+=`
+<tr>
+<td>${h.adSoyad}</td>
+${["Pzt","Sal","Car","Per","Cum","Cts"].map(g=>`
+<td><input type="checkbox" name="${h.id}_${g}_Sabah"></td>
+<td><input type="checkbox" name="${h.id}_${g}_Ogle"></td>
+`).join("")}
+</tr>`;
+  });
+});
+</script>
+
+</body>
+</html>
