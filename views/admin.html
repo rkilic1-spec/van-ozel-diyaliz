@@ -80,13 +80,12 @@ th {
     <button onclick="show('hemsireEkle')">Hemşire Ekle</button>
     <button onclick="show('izin')">📅 Haftalık İzin</button>
     <button onclick="show('dagitim')">🔄 Haftalık Dağıtım</button>
-     <a href="/logout">Çıkış</a>
+    <a href="/logout">Çıkış</a>
   </div>
 
   <!-- HASTA EKLE -->
   <div id="hastaEkle" class="card">
     <h3>Hasta Ekle</h3>
-
     <form method="POST" action="/admin/hasta-ekle">
       <input name="ad" placeholder="Hasta Adı" required><br><br>
 
@@ -109,7 +108,6 @@ th {
         <option value="">Seans</option>
         <option value="Sabah">Sabah</option>
         <option value="Öğle">Öğle</option>
-        <option value="Akşam">Akşam</option>
       </select><br><br>
 
       <button type="submit">Kaydet</button>
@@ -119,27 +117,22 @@ th {
   <!-- HASTA LİSTESİ -->
   <div id="hastaListe" class="card hidden">
     <h3>Hasta Listesi</h3>
-
     <table>
       <thead>
         <tr>
-<th>Ad</th>
-<th>Cihaz</th>
-<th>Gün</th>
-<th>Seans</th>
-<th>İşlem</th>
-
+          <th>Ad</th>
+          <th>Cihaz</th>
+          <th>Gün</th>
+          <th>Seans</th>
         </tr>
       </thead>
       <tbody id="hastaTablo"></tbody>
     </table>
   </div>
 
-
   <!-- HEMŞİRE EKLE -->
   <div id="hemsireEkle" class="card hidden">
     <h3>Hemşire Ekle</h3>
-
     <form method="POST" action="/admin/hemsire-ekle">
       <input name="adSoyad" placeholder="Ad Soyad" required><br><br>
       <input name="tc" placeholder="TC Kimlik No" required><br><br>
@@ -147,40 +140,16 @@ th {
     </form>
   </div>
 
-</div>
-<div id="izin" class="card hidden">
-  <h3>Haftalık İzin / Çalışma Çizelgesi</h3>
+  <!-- HAFTALIK DAĞITIM -->
+  <div id="dagitim" class="card hidden">
+    <h3>Haftalık Dağıtım</h3>
+    <form method="POST" action="/admin/dagitim-calistir">
+      <input name="hafta" value="2026-01-HAFTA-1" required>
+      <br><br>
+      <button type="submit">🔄 Dağıtımı Çalıştır</button>
+    </form>
+  </div>
 
-  <form method="POST" action="/admin/izin-kaydet">
-    <label>Hafta</label>
-    <input name="hafta" value="2026-01-HAFTA-1" required><br><br>
-
-    <table>
-      <tr>
-        <th>Hemşire</th>
-        <th>Pzt Sabah</th>
-        <th>Pzt Öğle</th>
-        <th>Çar Sabah</th>
-        <th>Çar Öğle</th>
-        <th>Cum Sabah</th>
-        <th>Cum Öğle</th>
-      </tr>
-
-      <!-- ÖRNEK: 1 hemşire -->
-      <tr>
-        <td>Ayşe Yılmaz</td>
-        <td><input type="checkbox" name="izin[1][Pzt_Sabah]" checked></td>
-        <td><input type="checkbox" name="izin[1][Pzt_Ogle]"></td>
-        <td><input type="checkbox" name="izin[1][Car_Sabah]" checked></td>
-        <td><input type="checkbox" name="izin[1][Car_Ogle]"></td>
-        <td><input type="checkbox" name="izin[1][Cum_Sabah]" checked></td>
-        <td><input type="checkbox" name="izin[1][Cum_Ogle]"></td>
-      </tr>
-    </table>
-
-    <br>
-    <button type="submit">Kaydet</button>
-  </form>
 </div>
 
 <script>
@@ -195,24 +164,13 @@ function yukleHastalar() {
     .then(data => {
       const tablo = document.getElementById("hastaTablo");
       tablo.innerHTML = "";
-
       data.forEach(h => {
         tablo.innerHTML += `
-          <tr style="${h.aktif ? "" : "opacity:0.5; text-decoration:line-through"}">
+          <tr>
             <td>${h.ad}</td>
             <td>${h.cihaz}</td>
             <td>${h.gunGrubu}</td>
             <td>${h.seans}</td>
-            <td>
-              ${
-                h.aktif
-                  ? `<form method="POST" action="/admin/hasta-pasif" style="display:inline">
-                       <input type="hidden" name="id" value="${h.id}">
-                       <button>Pasif Yap</button>
-                     </form>`
-                  : "Pasif"
-              }
-            </td>
           </tr>
         `;
       });
@@ -220,11 +178,5 @@ function yukleHastalar() {
 }
 </script>
 
-
 </body>
 </html>
-   <h3>Haftalık Dağıtım</h3>
-<form method="POST" action="/admin/dagitim-calistir">
-  <input name="hafta" value="2026-01-HAFTA-1" required>
-  <button type="submit">🔄 Dağıtımı Çalıştır</button>
-</form>
