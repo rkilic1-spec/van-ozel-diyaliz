@@ -78,6 +78,7 @@ th {
     <button onclick="show('hastaEkle')">Hasta Ekle</button>
     <button onclick="show('hastaListe'); yukleHastalar()">Hasta Listesi</button>
     <button onclick="show('hemsireEkle')">Hemşire Ekle</button>
+    <button onclick="show('izin')">📅 Haftalık İzin</button>
     <a href="/logout">Çıkış</a>
   </div>
 
@@ -145,6 +146,40 @@ th {
     </form>
   </div>
 
+</div>
+<div id="izin" class="card hidden">
+  <h3>Haftalık İzin / Çalışma Çizelgesi</h3>
+
+  <form method="POST" action="/admin/izin-kaydet">
+    <label>Hafta</label>
+    <input name="hafta" value="2026-01-HAFTA-1" required><br><br>
+
+    <table>
+      <tr>
+        <th>Hemşire</th>
+        <th>Pzt Sabah</th>
+        <th>Pzt Öğle</th>
+        <th>Çar Sabah</th>
+        <th>Çar Öğle</th>
+        <th>Cum Sabah</th>
+        <th>Cum Öğle</th>
+      </tr>
+
+      <!-- ÖRNEK: 1 hemşire -->
+      <tr>
+        <td>Ayşe Yılmaz</td>
+        <td><input type="checkbox" name="izin[1][Pzt_Sabah]" checked></td>
+        <td><input type="checkbox" name="izin[1][Pzt_Ogle]"></td>
+        <td><input type="checkbox" name="izin[1][Car_Sabah]" checked></td>
+        <td><input type="checkbox" name="izin[1][Car_Ogle]"></td>
+        <td><input type="checkbox" name="izin[1][Cum_Sabah]" checked></td>
+        <td><input type="checkbox" name="izin[1][Cum_Ogle]"></td>
+      </tr>
+    </table>
+
+    <br>
+    <button type="submit">Kaydet</button>
+  </form>
 </div>
 
 <script>
