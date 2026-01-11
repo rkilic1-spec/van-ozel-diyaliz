@@ -35,7 +35,10 @@ const DAGITIM_FILE = path.join(DATA_DIR, "dagitimlar.json");
 
 ensureFile(HEMSIRE_FILE);
 ensureFile(HASTA_FILE);
-ensureFile(DAGITIM_FILE);
+if (!fs.existsSync(DAGITIM_FILE)) {
+  fs.writeFileSync(DAGITIM_FILE, "{}");
+}
+
 
 
 // ===== YETKİ =====
@@ -276,17 +279,6 @@ app.post("/admin/hasta-pasif", requireAdmin, (req, res) => {
   res.redirect("/admin");
 });
 
-
-app.get("/admin/dagitim/:hafta", requireAdmin, (req, res) => {
-  const dosya = path.join(__dirname, "data", "dagitimlar.json");
-
-  if (!fs.existsSync(dosya)) {
-    return res.json([]);
-  }
-
-  const dagitimlar = JSON.parse(fs.readFileSync(dosya, "utf8"));
-  res.json(dagitimlar[req.params.hafta] || []);
-});
 
 
 /* ================== HASTA LİSTESİ ================== */
