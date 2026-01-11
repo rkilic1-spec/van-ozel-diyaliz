@@ -1,35 +1,61 @@
-<h2>Admin</h2>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+</head>
+<body>
 
-<h3>Hemşire</h3>
+<h1>Admin</h1>
+
+<hr>
+
+<h2>Hemşire Ekle</h2>
 <form method="POST" action="/admin/hemsire-ekle">
-<input name="adSoyad" placeholder="Ad Soyad">
-<button>Ekle</button>
+  <input name="adSoyad" placeholder="Ad Soyad" required>
+  <input name="tc" placeholder="TC" required>
+  <button type="submit">Ekle</button>
 </form>
 
-<h3>Hasta</h3>
+<hr>
+
+<h2>Hasta Ekle</h2>
 <form method="POST" action="/admin/hasta-ekle">
-<input name="ad" placeholder="Hasta">
-<input name="cihaz" type="number">
-<select name="gunGrubu">
-<option>Pzt-Çar-Cum</option>
-<option>Sal-Per-Cts</option>
-</select>
-<select name="seans">
-<option>Sabah</option>
-<option>Öğle</option>
-</select>
-<button>Ekle</button>
+  <input name="ad" placeholder="Hasta Adı" required>
+  <input name="cihaz" type="number" placeholder="Cihaz No" required>
+
+  <select name="gunGrubu" required>
+    <option value="">Gün Grubu</option>
+    <option value="Pzt-Çar-Cum">Pzt-Çar-Cum</option>
+    <option value="Sal-Per-Cts">Sal-Per-Cts</option>
+  </select>
+
+  <select name="seans" required>
+    <option value="">Seans</option>
+    <option value="Sabah">Sabah</option>
+    <option value="Öğle">Öğle</option>
+  </select>
+
+  <button type="submit">Ekle</button>
 </form>
 
-<option value="Pzt-Çar-Cum">Pzt-Çar-Cum</option>
-<option value="Sal-Per-Cts">Sal-Per-Cts</option>
+<hr>
 
-<h3>Dağıtım</h3>
-<form method="POST" action="/admin/dagitim">
-<input name="hafta" value="2026-01-HAFTA-1">
-<button>Çalıştır</button>
+<h2>Dağıtım</h2>
+<form method="POST" action="/admin/dagitim-calistir">
+  <input name="hafta" value="2026-01-HAFTA-1" required>
+  <button type="submit">Dağıtımı Çalıştır</button>
 </form>
+
+<br>
 
 <a href="/admin/dagitim/2026-01-HAFTA-1" target="_blank">
-Dağıtımı Gör
+  Dağıtımı Gör
 </a>
+
+<hr>
+
+<a href="/logout">Çıkış</a>
+
+</body>
+</html>
