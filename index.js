@@ -1,3 +1,6 @@
+console.log("🚀 index.js başladı");
+
+
 app.get("/", (req, res) => {
   res.redirect("/login/admin");
 });
