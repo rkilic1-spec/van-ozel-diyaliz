@@ -1,17 +1,7 @@
-console.log("🚀 index.js başladı");
-
-
-app.get("/", (req, res) => {
-  res.redirect("/login/admin");
-});
-
-
 const express = require("express");
 const session = require("express-session");
 const path = require("path");
 const fs = require("fs");
-
-const { haftalikDagitimYap } = require("./engine/dagitimMotoru");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -26,67 +16,64 @@ app.use(session({
   saveUninitialized: true
 }));
 
-const DATA = f => path.join(__dirname, "data", f);
+function ensure(file, def) {
+  if (!fs.existsSync(file)) {
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, JSON.stringify(def, null, 2));
+  }
+}
 
-function admin(req,res,next){
-  if(!req.session.user) return res.redirect("/login");
+const DATA = path.join(__dirname, "data");
+ensure(path.join(DATA, "hastalar.json"), []);
+ensure(path.join(DATA, "hemsireler.json"), []);
+ensure(path.join(DATA, "dagitimlar.json"), {});
+
+function requireAdmin(req,res,next){
+  if(!req.session.user) return res.redirect("/login/admin");
   next();
 }
 
-app.get("/login",(r,s)=>s.send(`
-<form method="POST">
-<input name="u"><input name="p">
-<button>Giriş</button>
-</form>`));
+app.get("/", (req,res)=> res.redirect("/login/admin"));
 
-app.post("/login",(r,s)=>{
-  if(r.body.u==="admin" && r.body.p==="1234"){
-    r.session.user={admin:true};
-    s.redirect("/admin");
-  } else s.send("Hatalı");
+app.get("/login/admin",(req,res)=>{
+  res.send(`
+    <form method="POST">
+      <input name="username">
+      <input name="password" type="password">
+      <button>Giriş</button>
+    </form>
+  `);
 });
 
-app.get("/admin",admin,(r,s)=>{
-  s.sendFile(path.join(__dirname,"views/admin.html"));
+app.post("/login/admin",(req,res)=>{
+  if(req.body.username==="admin" && req.body.password==="1234"){
+    req.session.user={role:"admin"};
+    return res.redirect("/admin");
+  }
+  res.send("Hatalı giriş");
 });
 
-/* HEMŞİRE */
-app.post("/admin/hemsire-ekle",admin,(r,s)=>{
-  const list = JSON.parse(fs.readFileSync(DATA("hemsireler.json")));
-  list.push({
-    id:Date.now(),
-    adSoyad:r.body.adSoyad,
-    aktif:true
-  });
-  fs.writeFileSync(DATA("hemsireler.json"),JSON.stringify(list,null,2));
-  s.redirect("/admin");
+app.get("/admin",requireAdmin,(req,res)=>{
+  res.send(`
+    <h2>Admin</h2>
+    <form method="POST" action="/admin/dagitim">
+      <input name="hafta" value="2026-01-HAFTA-1">
+      <button>Dağıtımı Çalıştır</button>
+    </form>
+    <a href="/admin/dagitim/2026-01-HAFTA-1">Dağıtımı Gör</a>
+  `);
 });
 
-/* HASTA */
-app.post("/admin/hasta-ekle",admin,(r,s)=>{
-  const list = JSON.parse(fs.readFileSync(DATA("hastalar.json")));
-  list.push({
-    id:Date.now(),
-    ad:r.body.ad,
-    cihaz:Number(r.body.cihaz),
-    gunGrubu:r.body.gunGrubu,
-    seans:r.body.seans,
-    aktif:true
-  });
-  fs.writeFileSync(DATA("hastalar.json"),JSON.stringify(list,null,2));
-  s.redirect("/admin");
+const { haftalikDagitimYap } = require("./engine/dagitimMotoru");
+
+app.post("/admin/dagitim",requireAdmin,(req,res)=>{
+  haftalikDagitimYap(req.body.hafta);
+  res.send("Dağıtım yapıldı");
 });
 
-/* DAĞITIM */
-app.post("/admin/dagitim",admin,(r,s)=>{
-  haftalikDagitimYap(r.body.hafta);
-  s.redirect("/admin");
+app.get("/admin/dagitim/:hafta",requireAdmin,(req,res)=>{
+  const d = JSON.parse(fs.readFileSync(path.join(DATA,"dagitimlar.json")));
+  res.json(d[req.params.hafta] || []);
 });
 
-/* GETİR */
-app.get("/admin/dagitim/:hafta",admin,(r,s)=>{
-  const d = JSON.parse(fs.readFileSync(DATA("dagitimlar.json")));
-  s.json(d[r.params.hafta]||[]);
-});
-
-app.listen(PORT,()=>console.log("🚀 Server:",PORT));
+app.listen(PORT,()=>console.log("🚀 Server çalışıyor",PORT));
