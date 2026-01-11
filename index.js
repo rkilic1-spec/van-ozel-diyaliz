@@ -31,9 +31,12 @@ function ensureFile(filePath) {
 const DATA_DIR = path.join(__dirname, "data");
 const HEMSIRE_FILE = path.join(DATA_DIR, "hemsireler.json");
 const HASTA_FILE = path.join(DATA_DIR, "hastalar.json");
+const DAGITIM_FILE = path.join(DATA_DIR, "dagitimlar.json");
 
 ensureFile(HEMSIRE_FILE);
 ensureFile(HASTA_FILE);
+ensureFile(DAGITIM_FILE);
+
 
 // ===== YETKİ =====
 function requireAdmin(req, res, next) {
@@ -271,6 +274,18 @@ app.post("/admin/hasta-pasif", requireAdmin, (req, res) => {
 
   fs.writeFileSync(dosyaYolu, JSON.stringify(hastalar, null, 2));
   res.redirect("/admin");
+});
+
+
+app.get("/admin/dagitim/:hafta", requireAdmin, (req, res) => {
+  const dosya = path.join(__dirname, "data", "dagitimlar.json");
+
+  if (!fs.existsSync(dosya)) {
+    return res.json([]);
+  }
+
+  const dagitimlar = JSON.parse(fs.readFileSync(dosya, "utf8"));
+  res.json(dagitimlar[req.params.hafta] || []);
 });
 
 
