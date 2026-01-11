@@ -1,235 +1,32 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<title>Van Özel Diyaliz Merkezi | Admin</title>
+<h2>Admin</h2>
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f2f4f7;
-}
+<h3>Hemşire</h3>
+<form method="POST" action="/admin/hemsire-ekle">
+<input name="adSoyad" placeholder="Ad Soyad">
+<button>Ekle</button>
+</form>
 
-header {
-  background: #0b5ed7;
-  color: white;
-  padding: 15px;
-  font-size: 20px;
-}
+<h3>Hasta</h3>
+<form method="POST" action="/admin/hasta-ekle">
+<input name="ad" placeholder="Hasta">
+<input name="cihaz" type="number">
+<select name="gunGrubu">
+<option>Pzt-Çar-Cum</option>
+<option>Sal-Per-Cts</option>
+</select>
+<select name="seans">
+<option>Sabah</option>
+<option>Öğle</option>
+</select>
+<button>Ekle</button>
+</form>
 
-.container {
-  max-width: 1200px;
-  margin: 20px auto;
-}
+<h3>Dağıtım</h3>
+<form method="POST" action="/admin/dagitim">
+<input name="hafta" value="2026-01-HAFTA-1">
+<button>Çalıştır</button>
+</form>
 
-.menu button, .menu a {
-  padding: 10px 15px;
-  margin-right: 10px;
-  border: none;
-  background: #0b5ed7;
-  color: white;
-  cursor: pointer;
-  border-radius: 5px;
-  text-decoration: none;
-}
-
-.menu button:hover, .menu a:hover {
-  background: #094db1;
-}
-
-.card {
-  background: white;
-  padding: 20px;
-  margin-top: 20px;
-  border-radius: 6px;
-}
-
-.hidden {
-  display: none;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: center;
-}
-
-th {
-  background: #eee;
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  Van Özel Diyaliz Merkezi – Admin Paneli
-</header>
-
-<div class="container">
-
-  <div class="menu">
-    <button onclick="show('hastaEkle')">Hasta Ekle</button>
-    <button onclick="show('hastaListe'); yukleHastalar()">Hasta Listesi</button>
-    <button onclick="show('hemsireEkle')">Hemşire Ekle</button>
-    <button onclick="show('izin')">📅 Haftalık İzin</button>
-    <button onclick="show('dagitim')">🔄 Haftalık Dağıtım</button>
-    <button onclick="show('dagitim'); yukleDagitim()">📊 Haftalık Dağıtım</button>
-
-    <a href="/logout">Çıkış</a>
-  </div>
-
-  <!-- HASTA EKLE -->
-  <div id="hastaEkle" class="card">
-    <h3>Hasta Ekle</h3>
-    <form method="POST" action="/admin/hasta-ekle">
-      <input name="ad" placeholder="Hasta Adı" required><br><br>
-
-      <select name="cihaz" required>
-        <option value="">Cihaz</option>
-        <script>
-          for (let i = 1; i <= 43; i++) {
-            document.write(`<option value="${i}">${i}</option>`);
-          }
-        </script>
-      </select><br><br>
-
-      <select name="gunGrubu" required>
-        <option value="">Gün Grubu</option>
-        <option value="Pzt-Çar-Cum">Pzt-Çar-Cum</option>
-        <option value="Sal-Per-Cts">Sal-Per-Cts</option>
-      </select><br><br>
-
-      <select name="seans" required>
-        <option value="">Seans</option>
-        <option value="Sabah">Sabah</option>
-        <option value="Öğle">Öğle</option>
-      </select><br><br>
-
-      <button type="submit">Kaydet</button>
-    </form>
-  </div>
-
-<div id="dagitim" class="card hidden">
-  <h3>Haftalık Dağıtım</h3>
-
-  <input id="haftaSec" value="2026-01-HAFTA-1">
-  <button onclick="yukleDagitim()">Getir</button>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Gün</th>
-        <th>Seans</th>
-        <th>Cihaz</th>
-        <th>Hasta</th>
-        <th>Hemşire</th>
-      </tr>
-    </thead>
-    <tbody id="dagitimTablo"></tbody>
-  </table>
-</div>
-
-  
-  <!-- HASTA LİSTESİ -->
-  <div id="hastaListe" class="card hidden">
-    <h3>Hasta Listesi</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Ad</th>
-          <th>Cihaz</th>
-          <th>Gün</th>
-          <th>Seans</th>
-        </tr>
-      </thead>
-      <tbody id="hastaTablo"></tbody>
-    </table>
-  </div>
-
-  <!-- HEMŞİRE EKLE -->
-  <div id="hemsireEkle" class="card hidden">
-    <h3>Hemşire Ekle</h3>
-    <form method="POST" action="/admin/hemsire-ekle">
-      <input name="adSoyad" placeholder="Ad Soyad" required><br><br>
-      <input name="tc" placeholder="TC Kimlik No" required><br><br>
-      <button type="submit">Ekle</button>
-    </form>
-  </div>
-
-  <!-- HAFTALIK DAĞITIM -->
-  <div id="dagitim" class="card hidden">
-    <h3>Haftalık Dağıtım</h3>
-    <form method="POST" action="/admin/dagitim-calistir">
-      <input name="hafta" value="2026-01-HAFTA-1" required>
-      <br><br>
-      <button type="submit">🔄 Dağıtımı Çalıştır</button>
-    </form>
-  </div>
-
-</div>
-
-<script>
-function show(id) {
-  document.querySelectorAll(".card").forEach(c => c.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-}
-
-function yukleHastalar() {
-  fetch("/admin/hastalar")
-    .then(res => res.json())
-    .then(data => {
-      const tablo = document.getElementById("hastaTablo");
-      tablo.innerHTML = "";
-      data.forEach(h => {
-        tablo.innerHTML += `
-          <tr>
-            <td>${h.ad}</td>
-            <td>${h.cihaz}</td>
-            <td>${h.gunGrubu}</td>
-            <td>${h.seans}</td>
-          </tr>
-        `;
-      });
-    });
-}
-</script>
-
-  <script>
-function yukleDagitim() {
-  const hafta = document.getElementById("haftaSec").value;
-
-  fetch(`/admin/dagitim/${hafta}`)
-    .then(res => res.json())
-    .then(data => {
-      const tablo = document.getElementById("dagitimTablo");
-      tablo.innerHTML = "";
-
-      if (data.length === 0) {
-        tablo.innerHTML = "<tr><td colspan='5'>Dağıtım yok</td></tr>";
-        return;
-      }
-
-      data.forEach(d => {
-        tablo.innerHTML += `
-          <tr>
-            <td>${d.gun}</td>
-            <td>${d.seans}</td>
-            <td>${d.cihaz}</td>
-            <td>${d.hasta}</td>
-            <td>${d.hemsire}</td>
-          </tr>
-        `;
-      });
-    });
-}
-</script>
-
-</body>
-</html>
+<a href="/admin/dagitim/2026-01-HAFTA-1" target="_blank">
+Dağıtımı Gör
+</a>
