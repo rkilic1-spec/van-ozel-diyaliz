@@ -64,9 +64,7 @@ function haftalikDagitimYap(hafta) {
   }
 
   yaz(DAGITIM_FILE, dagitimlar);
-  console.log("✅ Dağıtım dosyaya yazıldı");
+  console.log("✅ Dağıtım dosyaya yazıldı:", hafta);
 }
-console.log("🚨 haftalikDagitimYap ÇAĞRILDI", haftaKodu);
-
 
 module.exports = { haftalikDagitimYap };
