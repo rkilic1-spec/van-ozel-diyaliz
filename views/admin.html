@@ -2,13 +2,11 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Panel</title>
+  <title>Admin</title>
 </head>
 <body>
 
 <h1>Admin</h1>
-
-<hr>
 
 <h2>Hemşire Ekle</h2>
 <form method="POST" action="/admin/hemsire-ekle">
@@ -25,13 +23,11 @@
   <input name="cihaz" type="number" placeholder="Cihaz No" required>
 
   <select name="gunGrubu" required>
-    <option value="">Gün Grubu</option>
     <option value="Pzt-Çar-Cum">Pzt-Çar-Cum</option>
     <option value="Sal-Per-Cts">Sal-Per-Cts</option>
   </select>
 
   <select name="seans" required>
-    <option value="">Seans</option>
     <option value="Sabah">Sabah</option>
     <option value="Öğle">Öğle</option>
   </select>
@@ -43,7 +39,7 @@
 
 <h2>Dağıtım</h2>
 <form method="POST" action="/admin/dagitim-calistir">
-  <input name="hafta" value="2026-01-HAFTA-1" required>
+  <input name="hafta" value="2026-01-HAFTA-1">
   <button type="submit">Dağıtımı Çalıştır</button>
 </form>
 
