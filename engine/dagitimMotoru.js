@@ -1,5 +1,3 @@
-console.log("🔥 DAGITIM MOTORU YÜKLENDİ");
-
 const fs = require("fs");
 const path = require("path");
 
@@ -9,7 +7,7 @@ const DAGITIM_FILE = path.join(DATA_DIR, "dagitimlar.json");
 const GUNLER = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cts"];
 const SEANSLAR = ["Sabah", "Öğle"];
 
-function oku(dosya, def = []) {
+function oku(dosya, def) {
   if (!fs.existsSync(dosya)) return def;
   return JSON.parse(fs.readFileSync(dosya, "utf8"));
 }
@@ -19,52 +17,48 @@ function yaz(dosya, veri) {
 }
 
 function haftalikDagitimYap(hafta) {
-  console.log("🔄 Dağıtım başlatıldı:", hafta);
-
-  const hemsireler = oku(path.join(DATA_DIR, "hemsireler.json"));
-  const hastalar = oku(path.join(DATA_DIR, "hastalar.json"));
-  const izinler = oku(path.join(DATA_DIR, "izinler.json"), {});
+  const hemsireler = oku(path.join(DATA_DIR, "hemsireler.json"), []);
+  const hastalar = oku(path.join(DATA_DIR, "hastalar.json"), []);
   let dagitimlar = oku(DAGITIM_FILE, {});
 
   dagitimlar[hafta] = [];
 
-  let sayac = {};
+  const sayac = {};
   hemsireler.forEach(h => sayac[h.id] = 0);
 
   for (const gun of GUNLER) {
     for (const seans of SEANSLAR) {
 
-      const seansHastalari = hastalar.filter(h =>
-        h.aktif &&
+      const uygunHastalar = hastalar.filter(h =>
+        h.aktif === true &&
         h.seans === seans &&
         (
-          (["Pzt","Çar","Cum"].includes(gun) && h.gunGrubu === "Pzt-Çrş-Cum") ||
+          (["Pzt","Çar","Cum"].includes(gun) && h.gunGrubu === "Pzt-Çar-Cum") ||
           (["Sal","Per","Cts"].includes(gun) && h.gunGrubu === "Sal-Per-Cts")
         )
       );
 
-      for (const hasta of seansHastalari) {
-        const uygun = hemsireler
+      for (const hasta of uygunHastalar) {
+        const hemsire = hemsireler
           .filter(h => h.aktif)
           .sort((a,b) => sayac[a.id] - sayac[b.id])[0];
 
-        if (!uygun) continue;
+        if (!hemsire) continue;
 
-        sayac[uygun.id]++;
+        sayac[hemsire.id]++;
 
         dagitimlar[hafta].push({
           gun,
           seans,
           cihaz: hasta.cihaz,
           hasta: hasta.ad,
-          hemsire: uygun.adSoyad
+          hemsire: hemsire.adSoyad
         });
       }
     }
   }
 
   yaz(DAGITIM_FILE, dagitimlar);
-  console.log("✅ Dağıtım dosyaya yazıldı:", hafta);
 }
 
 module.exports = { haftalikDagitimYap };
