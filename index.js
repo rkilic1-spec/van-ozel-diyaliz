@@ -1,3 +1,8 @@
+app.get("/", (req, res) => {
+  res.redirect("/login/admin");
+});
+
+
 const express = require("express");
 const session = require("express-session");
 const path = require("path");
