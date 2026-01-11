@@ -1,3 +1,5 @@
+console.log("🔥 DAGITIM MOTORU YÜKLENDİ");
+
 const fs = require("fs");
 const path = require("path");
 
@@ -64,5 +66,6 @@ function haftalikDagitimYap(hafta) {
   yaz(DAGITIM_FILE, dagitimlar);
   console.log("✅ Dağıtım dosyaya yazıldı");
 }
+console.log("🚨 haftalikDagitimYap ÇAĞRILDI", hafta);
 
 module.exports = { haftalikDagitimYap };
