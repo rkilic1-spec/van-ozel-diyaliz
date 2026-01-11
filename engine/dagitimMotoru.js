@@ -1,53 +1,45 @@
-// engine/dagitimMotoru.js
 const fs = require("fs");
 const path = require("path");
 
-const DATA = (file) => path.join(__dirname, "..", "data", file);
+const DATA_DIR = path.join(__dirname, "..", "data");
+const DAGITIM_FILE = path.join(DATA_DIR, "dagitimlar.json");
 
 const GUNLER = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cts"];
 const SEANSLAR = ["Sabah", "Öğle"];
 
-function oku(file, def = []) {
-  if (!fs.existsSync(file)) return def;
-  return JSON.parse(fs.readFileSync(file, "utf8"));
+function oku(dosya, def = []) {
+  if (!fs.existsSync(dosya)) return def;
+  return JSON.parse(fs.readFileSync(dosya, "utf8"));
 }
 
-function yaz(file, data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+function yaz(dosya, veri) {
+  fs.writeFileSync(dosya, JSON.stringify(veri, null, 2));
 }
 
-function haftalikDagitimYap(haftaKodu) {
-  console.log("🔵 Dağıtım motoru çalıştı:", haftaKodu);
+function haftalikDagitimYap(hafta) {
+  console.log("🔄 Dağıtım başlatıldı:", hafta);
 
-  const hemsireler = oku(DATA("hemsireler.json"));
-  const hastalar = oku(DATA("hastalar.json"));
-  const izinler = oku(DATA("izinler.json"), {});
-  const dagitimlar = {};
+  const hemsireler = oku(path.join(DATA_DIR, "hemsireler.json"));
+  const hastalar = oku(path.join(DATA_DIR, "hastalar.json"));
+  const izinler = oku(path.join(DATA_DIR, "izinler.json"), {});
+  let dagitimlar = oku(DAGITIM_FILE, {});
 
-  dagitimlar[haftaKodu] = [];
+  dagitimlar[hafta] = [];
 
-  // hemşire başına sayaç
-  const sayac = {};
+  let sayac = {};
   hemsireler.forEach(h => sayac[h.id] = 0);
 
   for (const gun of GUNLER) {
     for (const seans of SEANSLAR) {
 
-const seansHastalari = hastalar.filter(h => {
-  if (!h.aktif) return false;
-  if (h.seans !== seans) return false;
-
-  if (h.gunGrubu === "Pzt-Çrş-Cum") {
-    return ["Pzt", "Çar", "Cum"].includes(gun);
-  }
-
-  if (h.gunGrubu === "Sal-Per-Cts") {
-    return ["Sal", "Per", "Cts"].includes(gun);
-  }
-
-  return false;
-});
-
+      const seansHastalari = hastalar.filter(h =>
+        h.aktif &&
+        h.seans === seans &&
+        (
+          (["Pzt","Çar","Cum"].includes(gun) && h.gunGrubu === "Pzt-Çrş-Cum") ||
+          (["Sal","Per","Cts"].includes(gun) && h.gunGrubu === "Sal-Per-Cts")
+        )
+      );
 
       for (const hasta of seansHastalari) {
         const uygun = hemsireler
@@ -58,7 +50,7 @@ const seansHastalari = hastalar.filter(h => {
 
         sayac[uygun.id]++;
 
-        dagitimlar[haftaKodu].push({
+        dagitimlar[hafta].push({
           gun,
           seans,
           cihaz: hasta.cihaz,
@@ -69,8 +61,8 @@ const seansHastalari = hastalar.filter(h => {
     }
   }
 
-  yaz(DATA("dagitimlar.json"), dagitimlar);
-  console.log("✅ Haftalık dağıtım tamamlandı");
+  yaz(DAGITIM_FILE, dagitimlar);
+  console.log("✅ Dağıtım dosyaya yazıldı");
 }
 
 module.exports = { haftalikDagitimYap };
