@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 10000;
 /* ================== MIDDLEWARE ================== */
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use("/data", express.static(path.join(__dirname, "data")));
 
 app.use(
   session({
